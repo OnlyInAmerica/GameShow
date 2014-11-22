@@ -6,7 +6,7 @@
     android:background="@drawable/tile_bg" >
 
     <TextView
-        android:id="@+id/title"
+        android:id="@+id/value"
         android:textColor="@color/blue_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -38,5 +38,8 @@
     <string name="dismiss_error">Dismiss</string>
     <string name="oops">Oops</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_question">QuestionActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
 
 </resources>

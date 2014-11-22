@@ -15,11 +15,11 @@
 package pro.dbro.gameshow;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
-import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 /*
  * MainActivity class that loads MainFragment
@@ -40,7 +40,17 @@ public class MainActivity extends Activity {
     @Override
     public boolean onKeyDown (int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
-            ((ViewClickHandler) getFragmentManager().findFragmentByTag("gameFrag")).onViewClicked(getCurrentFocus());
+//            ((ViewClickHandler) getFragmentManager().findFragmentByTag("gameFrag")).onViewClicked(getCurrentFocus());
+            getCurrentFocus().setTransitionName("sharedValue");
+            Intent intent = new Intent(this, QuestionActivity.class);
+            intent.putExtra("value", ((TextView) getCurrentFocus().findViewById(R.id.value)).getText());
+            intent.putExtra("prompt", (String) getCurrentFocus().getTag());
+            // create the transition animation - the images in the layouts
+            // of both activities are defined with android:transitionName="robot"
+            ActivityOptions options = ActivityOptions
+                    .makeSceneTransitionAnimation(this, getCurrentFocus(), "sharedValue");
+            // start the new activity
+            startActivity(intent, options.toBundle());
             return true;
         }
         return false;

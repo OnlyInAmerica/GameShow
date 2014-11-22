@@ -84,15 +84,16 @@ public class GameFragment extends Fragment implements ViewClickHandler {
                 if (x == 0) {
                     tile = (ViewGroup) inflater.inflate(R.layout.header_tile, row, false);
                     tile.setFocusable(false);
-                    ((TextView) tile.findViewById(R.id.title)).setText(categories[y].toUpperCase());
+                    ((TextView) tile.findViewById(R.id.value)).setText(categories[y].toUpperCase());
                 } else {
                     tile = (ViewGroup) inflater.inflate(R.layout.question_tile, row, false);
-                    ((TextView) tile.findViewById(R.id.title)).setText(String.format("$%d", (x + 1) * 100));
+                    ((TextView) tile.findViewById(R.id.value)).setText(String.format("$%d", (x + 1) * 100));
+                    tile.setTag("This is an example question prompt!");
                 }
 
                 tile.setLayoutParams(params);
 
-                ((TextView) tile.findViewById(R.id.title)).setTypeface(tileFont);
+                ((TextView) tile.findViewById(R.id.value)).setTypeface(tileFont);
                 row.addView(tile);
             }
         }
@@ -117,6 +118,7 @@ public class GameFragment extends Fragment implements ViewClickHandler {
 
     @Override
     public void onViewClicked(View v) {
-        ((TextView)v.findViewById(R.id.title)).setText("Clicked!");
+        //((TextView)v.findViewById(R.id.title)).setText("Clicked!");
+
     }
 }
