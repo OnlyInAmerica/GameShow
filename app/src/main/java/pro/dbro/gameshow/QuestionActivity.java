@@ -21,6 +21,7 @@ public class QuestionActivity extends Activity {
         ((TextView) findViewById(R.id.value)).setText(value);
 
         ((TextView) findViewById(R.id.prompt)).setText(prompt);
+
     }
 
 
