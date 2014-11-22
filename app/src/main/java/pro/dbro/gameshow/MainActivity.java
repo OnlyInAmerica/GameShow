@@ -15,25 +15,34 @@
 package pro.dbro.gameshow;
 
 import android.app.Activity;
-import android.net.Uri;
 import android.os.Bundle;
+import android.view.KeyEvent;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
 /*
  * MainActivity class that loads MainFragment
  */
-public class MainActivity extends Activity implements GameFragment.OnFragmentInteractionListener {
-    /**
-     * Called when the activity is first created.
-     */
+public class MainActivity extends Activity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        GameFragment fragment = GameFragment.newInstance();
+        getFragmentManager().beginTransaction()
+                .add(R.id.container, fragment, "gameFrag")
+                .commit();
     }
 
     @Override
-    public void onFragmentInteraction(Uri uri) {
-
+    public boolean onKeyDown (int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
+            ((ViewClickHandler) getFragmentManager().findFragmentByTag("gameFrag")).onViewClicked(getCurrentFocus());
+            return true;
+        }
+        return false;
     }
 }

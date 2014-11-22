@@ -3,10 +3,6 @@
     android:background="@android:color/black"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginBottom="27dp"
-    android:layout_marginLeft="48dp"
-    android:layout_marginRight="48dp"
-    android:layout_marginTop="27dp"
     tools:context="pro.dbro.gameshow.GameFragment">
 
     <TextView
