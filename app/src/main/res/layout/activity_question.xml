@@ -21,6 +21,7 @@
         android:textSize="50sp" />
 
     <LinearLayout
+        android:id="@+id/choiceContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -74,5 +75,19 @@
             android:padding="16dp" />
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/manualAnswer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/prompt"
+        android:visibility="gone"
+        android:background="@drawable/choice_bg"
+        android:focusable="true"
+        android:text="Show Answer"
+        android:gravity="center_horizontal"
+        android:layout_centerHorizontal="true"
+        android:textSize="20sp"
+        android:padding="16dp" />
 
 </RelativeLayout>

@@ -93,9 +93,13 @@ public class GameFragment extends Fragment implements ViewClickHandler {
                     ((TextView) tile.findViewById(R.id.value)).setText(game.categories.get(y).title.toUpperCase());
                 } else {
                     tile = (ViewGroup) inflater.inflate(R.layout.question_tile, row, false);
-                    ((TextView) tile.findViewById(R.id.value)).setText(String.format("$%d",
-                            game.categories.get(y).questions.get(x).value));
-                    tile.setTag(game.categories.get(y).questions.get(x));
+                    if (game.categories.get(y).questions.size() > x) {
+                        ((TextView) tile.findViewById(R.id.value)).setText(String.format("$%d",
+                                game.categories.get(y).questions.get(x).value));
+                        tile.setTag(game.categories.get(y).questions.get(x));
+                    } else {
+                        tile.setFocusable(false);
+                    }
                 }
 
                 tile.setLayoutParams(params);

@@ -57,11 +57,16 @@ public class MainActivity extends Activity {
             game.players.add(sav);
             game.players.add(dbro);
 
-            GameFragment fragment = GameFragment.newInstance(game);
-            getFragmentManager().beginTransaction()
-                    .add(R.id.container, fragment, "gameFrag")
-                    .commit();
-
+            JeopardyClient client = new JeopardyClient(this);
+            client.completeGame(game, new JeopardyClient.GameCompleteCallback() {
+                @Override
+                public void onGameComplete(Game game) {
+                    GameFragment fragment = GameFragment.newInstance(game);
+                    getFragmentManager().beginTransaction()
+                            .add(R.id.container, fragment, "gameFrag")
+                            .commit();
+                }
+            });
         } catch(IOException e) {
             e.printStackTrace();
         }
