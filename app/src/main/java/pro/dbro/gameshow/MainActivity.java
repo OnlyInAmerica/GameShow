@@ -17,18 +17,10 @@ package pro.dbro.gameshow;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
-import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import com.google.gson.Gson;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 
 import pro.dbro.gameshow.model.Game;
 import pro.dbro.gameshow.model.Player;

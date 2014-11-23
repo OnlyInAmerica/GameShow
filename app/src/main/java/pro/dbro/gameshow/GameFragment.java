@@ -1,7 +1,6 @@
 package pro.dbro.gameshow;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.Fragment;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -34,24 +33,10 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
 
     private RadioGroup playerGroup;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    // TODO: Rename and change types and number of parameters
-         public static GameFragment newInstance(Game game) {
-             GameFragment fragment = new GameFragment(game);
-     //        Bundle args = new Bundle();
-     //        args.putString(ARG_PARAM1, param1);
-     //        args.putString(ARG_PARAM2, param2);
-     //        fragment.setArguments(args);
-             return fragment;
-         }
+    public static GameFragment newInstance(Game game) {
+        GameFragment fragment = new GameFragment(game);
+        return fragment;
+    }
 
     public GameFragment() {
         // Required empty public constructor
@@ -61,15 +46,6 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
     public GameFragment(Game game) {
         super();
         this.game = game;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -132,8 +108,8 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
                     tile = (ViewGroup) inflater.inflate(R.layout.question_tile, row, false);
                     if (game.categories.get(y).questions.size() > (x - 1)) {
                         ((TextView) tile.findViewById(R.id.value)).setText(String.format("$%d",
-                                game.categories.get(y).questions.get(x-1).value));
-                        tile.setTag(game.categories.get(y).questions.get(x-1));
+                                game.categories.get(y).questions.get(x - 1).value));
+                        tile.setTag(game.categories.get(y).questions.get(x - 1));
                     } else {
                         tile.setFocusable(false);
                     }
@@ -149,40 +125,24 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
     }
 
     @Override
-              public void onAttach(Activity activity) {
-                  super.onAttach(activity);
-          //        try {
-          //            mListener = (OnFragmentInteractionListener) activity;
-          //        } catch (ClassCastException e) {
-          //            throw new ClassCastException(activity.toString()
-          //                    + " must implement OnFragmentInteractionListener");
-          //        }
-              }
+    public void onQuestionAnswered(ViewGroup questionTile, boolean answeredCorrectly) {
+        questionsAnswered++;
 
-    @Override
-              public void onDetach() {
-                  super.onDetach();
-              }
+        questionTile.setFocusable(false);
+        questionTile.setVisibility(View.INVISIBLE);
 
-    @Override
-              public void onQuestionAnswered(ViewGroup questionTile, boolean answeredCorrectly) {
-                  questionsAnswered++;
+        if (answeredCorrectly) {
+            Question question = (Question) questionTile.getTag();
+            incrementPlayerScore(currentPlayer, question.value);
+        }
 
-                  questionTile.setFocusable(false);
-                  questionTile.setVisibility(View.INVISIBLE);
+        advanceCurrentPlayer();
 
-                  if (answeredCorrectly) {
-                      Question question = (Question) questionTile.getTag();
-                      incrementPlayerScore(currentPlayer, question.value);
-                  }
-
-                  advanceCurrentPlayer();
-
-                  Log.i(TAG, String.format("Answered %d/%d questions", questionsAnswered, game.countQuestions()));
-                  if (questionsAnswered == game.countQuestions()) {
-                      Toast.makeText(getActivity(), "GAME OVER", Toast.LENGTH_SHORT).show();
-                  }
-              }
+        Log.i(TAG, String.format("Answered %d/%d questions", questionsAnswered, game.countQuestions()));
+        if (questionsAnswered == game.countQuestions()) {
+            Toast.makeText(getActivity(), "GAME OVER", Toast.LENGTH_SHORT).show();
+        }
+    }
 
     private void advanceCurrentPlayer() {
         int currentPlayerNumber = game.players.indexOf(currentPlayer);
