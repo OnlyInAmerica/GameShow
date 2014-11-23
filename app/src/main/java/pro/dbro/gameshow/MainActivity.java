@@ -20,6 +20,7 @@ import android.content.Intent;
 import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -37,6 +38,10 @@ import pro.dbro.gameshow.model.Question;
  * MainActivity class that loads MainFragment
  */
 public class MainActivity extends Activity {
+
+    public static final int ANSWER_QUESTION = 0;
+
+    private ViewGroup mLastQuestionView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -85,11 +90,26 @@ public class MainActivity extends Activity {
             ActivityOptions options = ActivityOptions
                     .makeSceneTransitionAnimation(this, getCurrentFocus(), "sharedValue");
             // start the new activity
-            startActivity(intent, options.toBundle());
+            mLastQuestionView = (ViewGroup) getCurrentFocus();
+            startActivityForResult(intent, ANSWER_QUESTION, options.toBundle());
             return true;
         } else if (keyCode == KeyEvent.KEYCODE_BACK) {
             finish();
         }
         return false;
     }
+
+    @Override
+         protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+             // Check which request we're responding to
+             if (requestCode == ANSWER_QUESTION) {
+
+                 ((QuestionAnsweredListener) getFragmentManager().findFragmentByTag("gameFrag")).onQuestionAnswered(mLastQuestionView);
+                 if (resultCode == QuestionActivity.ANSWERED_CORRECT) {
+
+                 } else {
+
+                 }
+             }
+         }
 }

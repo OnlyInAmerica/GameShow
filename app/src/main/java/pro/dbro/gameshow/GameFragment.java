@@ -15,7 +15,7 @@ import android.widget.TextView;
 import pro.dbro.gameshow.model.Game;
 
 
-public class GameFragment extends Fragment implements ViewClickHandler {
+public class GameFragment extends Fragment implements QuestionAnsweredListener {
 
     private Game game;
 
@@ -128,8 +128,8 @@ public class GameFragment extends Fragment implements ViewClickHandler {
     }
 
     @Override
-    public void onViewClicked(View v) {
-        //((TextView)v.findViewById(R.id.title)).setText("Clicked!");
-
+    public void onQuestionAnswered(ViewGroup questionTile) {
+        questionTile.setFocusable(false);
+        ((TextView) questionTile.findViewById(R.id.value)).setText("");
     }
 }

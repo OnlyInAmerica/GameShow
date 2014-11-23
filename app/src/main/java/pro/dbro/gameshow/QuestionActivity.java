@@ -1,7 +1,6 @@
 package pro.dbro.gameshow;
 
 import android.app.Activity;
-import android.app.ActivityOptions;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -17,7 +16,14 @@ import pro.dbro.gameshow.model.Question;
 
 public class QuestionActivity extends Activity {
 
+    public static String INTENT_ACTION = "pro.dbro.gameshow.QuestionResult";
+    public static int ANSWERED_CORRECT = 1;
+    public static int ANSWERED_INCORRECT = 0;
+
+    private static enum State { SELECT, SHOWING_ANSWER }
+
     private Question question;
+    private State state = State.SELECT;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,22 +86,29 @@ public class QuestionActivity extends Activity {
                 int selection = (int) getCurrentFocus().getTag();
                 if (selection == question.correctChoice) {
                     Toast.makeText(this, "CORRECT", Toast.LENGTH_SHORT).show();
+                    finishWithQuestionResult(true);
                 } else {
                     Toast.makeText(this, "WRONG", Toast.LENGTH_SHORT).show();
+                    finishWithQuestionResult(false);
                 }
-                finish();
             } else {
-                (findViewById(R.id.manualAnswer)).setVisibility(View.GONE);
-                ((TextView) findViewById(R.id.prompt)).setText(question.choices.get(0));
-                (findViewById(R.id.prompt)).postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        finish();
-                    }
-                }, 5000);
+                if (state == State.SELECT) {
+                    ((TextView) findViewById(R.id.prompt)).setText(question.choices.get(0));
+                    ((TextView) findViewById(R.id.manualAnswer)).setText("Finish");
+                    state = State.SHOWING_ANSWER;
+                } else {
+                    // TODO Get success
+                    finishWithQuestionResult(true);
+                }
             }
             return true;
         }
         return false;
+    }
+
+    private void finishWithQuestionResult(boolean correctAnswer) {
+        Intent result = new Intent(INTENT_ACTION);
+        setResult((correctAnswer ? ANSWERED_CORRECT : ANSWERED_INCORRECT), result);
+        finish();
     }
 }
