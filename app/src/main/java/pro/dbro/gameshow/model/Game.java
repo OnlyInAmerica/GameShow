@@ -13,10 +13,17 @@ public class Game {
     public List<Category> categories;
     public List<Player> players;
 
-    public void addCategory(Category category) {
-        if (categories == null) categories = new ArrayList<>();
+    public Game() {
+        categories = new ArrayList<>();
+        players = new ArrayList<>();
+    }
 
+    public void addCategory(Category category) {
         categories.add(category);
+    }
+
+    public void addPlayer(Player player) {
+        players.add(player);
     }
 
     public int countQuestions() {

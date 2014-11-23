@@ -1,39 +1,39 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@android:color/black"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/black"
     tools:context="pro.dbro.gameshow.GameFragment">
 
     <TextView
-             android:id="@+id/header"
-             android:layout_width="wrap_content"
-             android:layout_height="wrap_content"
-             android:layout_alignParentTop="true"
-             android:layout_alignParentStart="true"
-             android:padding="16dp"
-             android:textSize="60sp"
-             android:textColor="@android:color/white"
-             android:text="JEOPARTY!" />
+        android:id="@+id/header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:padding="16dp"
+        android:text="JEOPARTY!"
+        android:textColor="@android:color/white"
+        android:textSize="40sp" />
 
     <RadioGroup
         android:id="@+id/playerGroup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_toEndOf="@id/header"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
         android:layout_below="@id/prompt"
+        android:layout_toEndOf="@id/header"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:weightSum="4"/>
+        android:weightSum="4" />
 
-             <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/tableLayout"
-        android:layout_margin="16dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/header"
+        android:layout_margin="16dp"
         android:gravity="center">
 
     </TableLayout>

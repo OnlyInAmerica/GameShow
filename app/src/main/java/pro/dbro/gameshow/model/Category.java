@@ -8,7 +8,7 @@ import java.util.List;
  */
 public class Category {
 
-    public static final int REQUIRED_QUESTIONS = 6;
+    public static final int REQUIRED_QUESTIONS = 5;
 
     public String title;
     public int jServiceId;

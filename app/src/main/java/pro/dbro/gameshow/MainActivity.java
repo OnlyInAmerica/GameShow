@@ -48,19 +48,21 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        try {
-            AssetManager assetManager = getAssets();
-            InputStream ims = assetManager.open("games/default.json");
+//        try {
+//            AssetManager assetManager = getAssets();
+//            InputStream ims = assetManager.open("games/default.json");
+//
+//            Gson gson = new Gson();
+//            Reader reader = new InputStreamReader(ims);
+//
+//            Game game = gson.fromJson(reader, Game.class);
 
-            Gson gson = new Gson();
-            Reader reader = new InputStreamReader(ims);
-
-            Game game = gson.fromJson(reader, Game.class);
+            Game game = new Game();
 
             Player sav = new Player("Savvy J");
             Player dbro = new Player("dbro");
-            game.players.add(sav);
-            game.players.add(dbro);
+            game.addPlayer(sav);
+            game.addPlayer(dbro);
 
             JeopardyClient client = new JeopardyClient(this);
             client.completeGame(game, new JeopardyClient.GameCompleteCallback() {
@@ -72,9 +74,9 @@ public class MainActivity extends Activity {
                             .commit();
                 }
             });
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
+//        } catch(IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
     @Override
