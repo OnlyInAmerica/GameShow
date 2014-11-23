@@ -22,6 +22,7 @@
 
      <LinearLayout
          android:id="@+id/choiceContainer"
+         style="?android:attr/buttonBarStyle"
          android:layout_width="match_parent"
          android:layout_height="wrap_content"
          android:layout_alignParentBottom="true"
@@ -30,8 +31,9 @@
          android:orientation="horizontal"
          android:weightSum="4">
 
-         <TextView
+         <Button
              android:id="@+id/choice1"
+             style="?android:attr/buttonBarButtonStyle"
              android:layout_width="0dp"
              android:layout_height="wrap_content"
              android:layout_weight="1"
@@ -41,8 +43,9 @@
              android:padding="16dp"
              android:textSize="20sp" />
 
-         <TextView
+         <Button
              android:id="@+id/choice2"
+             style="?android:attr/buttonBarButtonStyle"
              android:layout_width="0dp"
              android:layout_height="wrap_content"
              android:layout_weight="1"
@@ -52,8 +55,9 @@
              android:padding="16dp"
              android:textSize="20sp" />
 
-         <TextView
+         <Button
              android:id="@+id/choice3"
+             style="?android:attr/buttonBarButtonStyle"
              android:layout_width="0dp"
              android:layout_height="wrap_content"
              android:layout_weight="1"
@@ -63,8 +67,9 @@
              android:padding="16dp"
              android:textSize="20sp" />
 
-         <TextView
+         <Button
              android:id="@+id/choice4"
+             style="?android:attr/buttonBarButtonStyle"
              android:layout_width="0dp"
              android:layout_height="wrap_content"
              android:layout_weight="1"
@@ -76,8 +81,8 @@
 
      </LinearLayout>
 
-     <TextView
-         android:id="@+id/manualAnswer"
+     <Button
+         android:id="@+id/showAnswer"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
          android:layout_below="@id/prompt"
@@ -85,7 +90,7 @@
          android:background="@drawable/choice_bg"
          android:focusable="true"
          android:padding="16dp"
-         android:text="Show Answer"
+         android:text="@string/show_answer"
          android:textSize="20sp"
          android:visibility="gone" />
 

@@ -18,6 +18,8 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import pro.dbro.gameshow.model.Category;
 import pro.dbro.gameshow.model.Game;
 import pro.dbro.gameshow.model.Player;
@@ -31,7 +33,7 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
     private Player currentPlayer;
     private int questionsAnswered;
 
-    private RadioGroup playerGroup;
+    @InjectView(R.id.playerGroup) RadioGroup playerGroup;
 
     public static GameFragment newInstance(Game game) {
         GameFragment fragment = new GameFragment(game);
@@ -54,20 +56,20 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
 
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_main, container, false);
+        ButterKnife.inject(this, root);
 
         Typeface gameShowFont = Typeface.createFromAsset(getActivity().getAssets(), "fonts/gyparody.ttf");
-        Typeface tileFont = Typeface.createFromAsset(getActivity().getAssets(), "fonts/swiss_911.ttf");
-        TextView headerTitle = (TextView) root.findViewById(R.id.header);
+        Typeface tileFont     = Typeface.createFromAsset(getActivity().getAssets(), "fonts/swiss_911.ttf");
+
+        TextView headerTitle = ButterKnife.findById(root, R.id.header);
         headerTitle.setTypeface(gameShowFont);
 
-        TableLayout table = (TableLayout) root.findViewById(R.id.tableLayout);
+        TableLayout table = ButterKnife.findById(root, R.id.tableLayout);
 
         final int NUM_COLS = game.categories.size();
         final int NUM_ROWS = Category.REQUIRED_QUESTIONS + 1; // +1 for header
 
         List<Player> players = game.players;
-
-        playerGroup = (RadioGroup) root.findViewById(R.id.playerGroup);
 
         for (Player player : players) {
             RadioButton playerButton = new RadioButton(getActivity());
@@ -122,6 +124,12 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
             }
         }
         return root;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.reset(this);
     }
 
     @Override

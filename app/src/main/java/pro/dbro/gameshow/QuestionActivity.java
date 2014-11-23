@@ -1,126 +1,120 @@
 package pro.dbro.gameshow;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.graphics.Typeface;
-import android.os.Bundle;
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.TextView;
-import android.widget.Toast;
+ import android.content.Intent;
+ import android.graphics.Typeface;
+ import android.os.Bundle;
+ import android.view.KeyEvent;
+ import android.view.View;
+ import android.view.ViewGroup;
+ import android.widget.Button;
+ import android.widget.TextView;
+ import android.widget.Toast;
 
-import pro.dbro.gameshow.model.Question;
+ import java.util.List;
+
+ import butterknife.ButterKnife;
+ import butterknife.InjectView;
+ import butterknife.InjectViews;
+ import butterknife.OnClick;
+ import pro.dbro.gameshow.model.Question;
 
 
 public class QuestionActivity extends Activity {
 
-    public static String INTENT_ACTION = "pro.dbro.gameshow.QuestionResult";
-    public static int ANSWERED_CORRECT = 1;
-    public static int ANSWERED_INCORRECT = 0;
+     public static String INTENT_ACTION = "pro.dbro.gameshow.QuestionResult";
+     public static int ANSWERED_CORRECT = 1;
+     public static int ANSWERED_INCORRECT = 0;
 
-    private static enum State { SELECT, SHOWING_ANSWER }
+     private static enum State {WILL_SHOW_ANSWER, WILL_SELECT_ANSWER, SHOWING_ANSWER}
 
-    private Question question;
-    private State state = State.SELECT;
+     private Question question;
+     private State state;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_question);
-//        String value = getIntent().getExtras().getString("value");
-        question = (Question) getIntent().getExtras().getSerializable("question");
-        Typeface tileFont = Typeface.createFromAsset(getAssets(), "fonts/Korinna_Bold.ttf");
-//        ((TextView) findViewById(R.id.value)).setTypeface(tileFont);
-//        ((TextView) findViewById(R.id.value)).setText(value);
+     @InjectView(R.id.prompt)
+     TextView promptView;
 
-        ((TextView) findViewById(R.id.prompt)).setTypeface(tileFont);
-        ((TextView) findViewById(R.id.prompt)).setText(question.prompt.toUpperCase());
+     @InjectView(R.id.choiceContainer)
+     ViewGroup choiceContainer;
 
-        if (question.choices.size() == 4) {
-            ((TextView) findViewById(R.id.choice1)).setText(question.choices.get(0));
-            findViewById(R.id.choice1).setTag(0);
+     @InjectView(R.id.showAnswer)
+     Button showAnswer;
 
-            ((TextView) findViewById(R.id.choice2)).setText(question.choices.get(1));
-            findViewById(R.id.choice2).setTag(1);
+     @InjectViews({R.id.choice1, R.id.choice2, R.id.choice3, R.id.choice4})
+     List<Button> choiceViews;
 
-            ((TextView) findViewById(R.id.choice3)).setText(question.choices.get(2));
-            findViewById(R.id.choice3).setTag(2);
+     @Override
+     protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.activity_question);
+         ButterKnife.inject(this);
 
-            ((TextView) findViewById(R.id.choice4)).setText(question.choices.get(3));
-            findViewById(R.id.choice4).setTag(3);
-        } else {
-            findViewById(R.id.choiceContainer).setVisibility(View.GONE);
-            findViewById(R.id.manualAnswer).setVisibility(View.VISIBLE);
-        }
-    }
+         question = (Question) getIntent().getExtras().getSerializable("question");
 
+         Typeface tileFont = Typeface.createFromAsset(getAssets(), "fonts/Korinna_Bold.ttf");
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_question, menu);
-        return true;
-    }
+         promptView.setTypeface(tileFont);
+         promptView.setText(question.prompt.toUpperCase());
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+         if (question.choices.size() > 1) {
+             state = State.WILL_SELECT_ANSWER;
+             for (int x = 0; x < question.choices.size(); x++) {
+                 choiceViews.get(x).setText(question.choices.get(x));
+                 choiceViews.get(x).setTag(x);
+             }
+         } else {
+             state = State.WILL_SHOW_ANSWER;
+             choiceContainer.setVisibility(View.GONE);
+             showAnswer.setVisibility(View.VISIBLE);
+         }
+     }
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+     @OnClick(R.id.showAnswer)
+     public void onShowAnswerClicked(View showAnswer) {
+         promptView.setText(question.choices.get(0));
 
-        return super.onOptionsItemSelected(item);
-    }
+         choiceContainer.setVisibility(View.VISIBLE);
+         showAnswer.setVisibility(View.GONE);
 
-    @Override
-    public boolean onKeyDown (int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
-            if (question.choices.size() > 1) {
-                int selection = (int) getCurrentFocus().getTag();
-                if (selection == question.correctChoice) {
-                    Toast.makeText(this, "CORRECT", Toast.LENGTH_SHORT).show();
-                    finishWithQuestionResult(true);
-                } else {
-                    Toast.makeText(this, "WRONG", Toast.LENGTH_SHORT).show();
-                    finishWithQuestionResult(false);
-                }
-            } else {
-                if (state == State.SELECT) {
-                    ((TextView) findViewById(R.id.prompt)).setText(question.choices.get(0));
+         choiceViews.get(0).setVisibility(View.INVISIBLE);
 
-                    findViewById(R.id.choiceContainer).setVisibility(View.VISIBLE);
-                    (findViewById(R.id.manualAnswer)).setVisibility(View.GONE);
+         choiceViews.get(1).setText("I got it");
+         choiceViews.get(1).setTag(true);
 
-                    findViewById(R.id.choice1).setVisibility(View.INVISIBLE);
+         choiceViews.get(2).setText("I didn't");
+         choiceViews.get(2).setTag(false);
 
-                    ((TextView) findViewById(R.id.choice2)).setText("I got it");
-                    findViewById(R.id.choice2).setTag(true);
+         choiceViews.get(3).setVisibility(View.INVISIBLE);
 
-                    ((TextView) findViewById(R.id.choice3)).setText("I didn't");
-                    findViewById(R.id.choice3).setTag(false);
+         state = State.SHOWING_ANSWER;
+     }
 
-                    findViewById(R.id.choice4).setVisibility(View.INVISIBLE);
-                    state = State.SHOWING_ANSWER;
-                } else if (state == State.SHOWING_ANSWER) {
-                    boolean answeredCorrectly = (boolean) getCurrentFocus().getTag();
-                    finishWithQuestionResult(answeredCorrectly);
-                }
-            }
-            return true;
-        }
-        return false;
-    }
+     @OnClick({R.id.choice1, R.id.choice2, R.id.choice3, R.id.choice4})
+     public void onAnswerSelected(View selectedAnswerView) {
+         switch (state) {
+             case WILL_SELECT_ANSWER:
 
-    private void finishWithQuestionResult(boolean correctAnswer) {
-        Intent result = new Intent(INTENT_ACTION);
-        setResult((correctAnswer ? ANSWERED_CORRECT : ANSWERED_INCORRECT), result);
-        finish();
-    }
-}
+                 int selection = (int) selectedAnswerView.getTag();
+                 if (selection == question.correctChoice) {
+                     Toast.makeText(this, "CORRECT", Toast.LENGTH_SHORT).show();
+                     finishWithQuestionResult(true);
+                 } else {
+                     Toast.makeText(this, "WRONG", Toast.LENGTH_SHORT).show();
+                     finishWithQuestionResult(false);
+                 }
+                 break;
+
+             case SHOWING_ANSWER:
+
+                 boolean answeredCorrectly = (boolean) getCurrentFocus().getTag();
+                 finishWithQuestionResult(answeredCorrectly);
+                 break;
+         }
+     }
+
+     private void finishWithQuestionResult(boolean correctAnswer) {
+         Intent result = new Intent(INTENT_ACTION);
+         setResult((correctAnswer ? ANSWERED_CORRECT : ANSWERED_INCORRECT), result);
+         finish();
+     }
+ }

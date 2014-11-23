@@ -12,7 +12,7 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:padding="16dp"
-        android:text="JEOPARTY!"
+        android:text="@string/jeoparty"
         android:textColor="@android:color/white"
         android:textSize="40sp" />
 
