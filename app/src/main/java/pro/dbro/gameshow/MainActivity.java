@@ -17,9 +17,21 @@ package pro.dbro.gameshow;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.widget.TextView;
+
+import com.google.gson.Gson;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+
+import pro.dbro.gameshow.model.Game;
+import pro.dbro.gameshow.model.Player;
+import pro.dbro.gameshow.model.Question;
 
 /*
  * MainActivity class that loads MainFragment
@@ -31,10 +43,28 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        GameFragment fragment = GameFragment.newInstance();
-        getFragmentManager().beginTransaction()
-                .add(R.id.container, fragment, "gameFrag")
-                .commit();
+        try {
+            AssetManager assetManager = getAssets();
+            InputStream ims = assetManager.open("games/default.json");
+
+            Gson gson = new Gson();
+            Reader reader = new InputStreamReader(ims);
+
+            Game game = gson.fromJson(reader, Game.class);
+
+            Player sav = new Player("Savvy J");
+            Player dbro = new Player("dbro");
+            game.players.add(sav);
+            game.players.add(dbro);
+
+            GameFragment fragment = GameFragment.newInstance(game);
+            getFragmentManager().beginTransaction()
+                    .add(R.id.container, fragment, "gameFrag")
+                    .commit();
+
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -44,7 +74,7 @@ public class MainActivity extends Activity {
             getCurrentFocus().setTransitionName("sharedValue");
             Intent intent = new Intent(this, QuestionActivity.class);
             intent.putExtra("value", ((TextView) getCurrentFocus().findViewById(R.id.value)).getText());
-            intent.putExtra("prompt", (String) getCurrentFocus().getTag());
+            intent.putExtra("question", (Question) getCurrentFocus().getTag());
             // create the transition animation - the images in the layouts
             // of both activities are defined with android:transitionName="robot"
             ActivityOptions options = ActivityOptions
@@ -52,6 +82,8 @@ public class MainActivity extends Activity {
             // start the new activity
             startActivity(intent, options.toBundle());
             return true;
+        } else if (keyCode == KeyEvent.KEYCODE_BACK) {
+            finish();
         }
         return false;
     }

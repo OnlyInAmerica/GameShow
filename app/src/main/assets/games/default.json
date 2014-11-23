@@ -1,0 +1,52 @@
+{
+	"categories": [
+		{
+			"title": "John's Basement",
+			"questions": [
+			    {
+                    "value": 200,
+                    "prompt": "This shortcut halved the time required to transit from Chesterbrook to Summerhill",
+                    "choices": [
+                        "Mill Road", "Le Boutlier shortcut", "Yellow Springs Road", "Spice Route"
+                    ],
+                    "correctChoice" : 3
+                },
+			    {
+                    "value": 300,
+                    "prompt": "\"JOOHHN! There's breakfast on the table and ____ on the computer!\"",
+                    "choices": [
+                        "A virus", "Chocolate", "Porn", "Jello"
+                    ],
+                    "correctChoice" : 2
+                },
+			    {
+                    "value": 400,
+                    "prompt": "This expired mouse was a permanent resident of the boiler room.",
+                    "choices": [
+                        "Mickey", "Minnie", "Art", "Picard"
+                    ],
+                    "correctChoice" : 0
+                },
+				{
+					"value": 500,
+					"prompt": "The distinct red dye of this Dextromethorphan lozenge colored the couch cushions of John's basement.",
+					"choices": [
+						"Delsym", "Sucrets", "Robitussin", "Cheratussin"
+					],
+					"correctChoice" : 1
+				},
+                {
+                    "value": 600,
+                    "prompt": "The kitchen clock issued an hourly sound of this variety.",
+                    "choices": [
+                        "Sports Cars", "Opera", "Barking dogs", "Italian music"
+                    ],
+                    "correctChoice" : 0
+                }
+			]
+		}
+	],
+	"players" : [
+
+	]
+}

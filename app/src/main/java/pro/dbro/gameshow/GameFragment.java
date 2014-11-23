@@ -12,8 +12,12 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import pro.dbro.gameshow.model.Game;
+
 
 public class GameFragment extends Fragment implements ViewClickHandler {
+
+    private Game game;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -25,8 +29,9 @@ public class GameFragment extends Fragment implements ViewClickHandler {
     private String mParam2;
 
     // TODO: Rename and change types and number of parameters
-    public static GameFragment newInstance() {
+    public static GameFragment newInstance(Game game) {
         GameFragment fragment = new GameFragment();
+        fragment.game = game;
 //        Bundle args = new Bundle();
 //        args.putString(ARG_PARAM1, param1);
 //        args.putString(ARG_PARAM2, param2);
@@ -51,7 +56,6 @@ public class GameFragment extends Fragment implements ViewClickHandler {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        String[] categories = new String[] {"Dogs", "Nails", "Tacos", "Scandal", "Kauai", "SpaNight"};
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_main, container, false);
 
@@ -62,8 +66,9 @@ public class GameFragment extends Fragment implements ViewClickHandler {
 
         TableLayout table = (TableLayout) root.findViewById(R.id.tableLayout);
 
-        final int NUM_COLS = 6;
-        final int NUM_ROWS = 6;
+        final int NUM_COLS = game.categories.size();
+        final int NUM_ROWS = game.categories.get(0).questions.size();
+
 
         for (int x = 0; x < NUM_ROWS; x++) {
             TableRow row = new TableRow(getActivity());
@@ -76,6 +81,7 @@ public class GameFragment extends Fragment implements ViewClickHandler {
             row.setWeightSum(NUM_COLS);
             table.addView(row);
 
+
             for (int y = 0; y < NUM_COLS; y++) {
                 ViewGroup tile;
                 TableRow.LayoutParams params = new TableRow.LayoutParams(0, TableRow.LayoutParams.MATCH_PARENT, 1f);
@@ -84,11 +90,12 @@ public class GameFragment extends Fragment implements ViewClickHandler {
                 if (x == 0) {
                     tile = (ViewGroup) inflater.inflate(R.layout.header_tile, row, false);
                     tile.setFocusable(false);
-                    ((TextView) tile.findViewById(R.id.value)).setText(categories[y].toUpperCase());
+                    ((TextView) tile.findViewById(R.id.value)).setText(game.categories.get(y).title.toUpperCase());
                 } else {
                     tile = (ViewGroup) inflater.inflate(R.layout.question_tile, row, false);
-                    ((TextView) tile.findViewById(R.id.value)).setText(String.format("$%d", (x + 1) * 100));
-                    tile.setTag("This is an example question prompt!");
+                    ((TextView) tile.findViewById(R.id.value)).setText(String.format("$%d",
+                            game.categories.get(y).questions.get(x).value));
+                    tile.setTag(game.categories.get(y).questions.get(x));
                 }
 
                 tile.setLayoutParams(params);

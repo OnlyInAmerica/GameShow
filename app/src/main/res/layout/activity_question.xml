@@ -12,26 +12,67 @@
     tools:context="pro.dbro.gameshow.QuestionActivity">
 
     <TextView
-        android:id="@+id/value"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:gravity="center"
-        android:shadowColor="@android:color/black"
-        android:shadowDy="8"
-        android:shadowRadius="8"
-        android:textColor="@color/gold"
-        android:textSize="40sp" />
-
-    <TextView
         android:id="@+id/prompt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/value"
         android:layout_centerInParent="true"
         android:gravity="center"
         android:textColor="@color/blue_title"
-        android:textSize="80sp" />
+        android:textSize="50sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@id/prompt"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:weightSum="4">
+
+        <TextView
+            android:id="@+id/choice1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/choice_bg"
+            android:focusable="true"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:padding="16dp" />
+
+        <TextView
+            android:id="@+id/choice2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/choice_bg"
+            android:focusable="true"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:padding="16dp" />
+
+        <TextView
+            android:id="@+id/choice3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/choice_bg"
+            android:focusable="true"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:padding="16dp" />
+
+        <TextView
+            android:id="@+id/choice4"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/choice_bg"
+            android:focusable="true"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:padding="16dp" />
+
+    </LinearLayout>
 
 </RelativeLayout>
