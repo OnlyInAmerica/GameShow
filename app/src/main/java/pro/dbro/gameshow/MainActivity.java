@@ -104,12 +104,8 @@ public class MainActivity extends Activity {
              // Check which request we're responding to
              if (requestCode == ANSWER_QUESTION) {
 
-                 ((QuestionAnsweredListener) getFragmentManager().findFragmentByTag("gameFrag")).onQuestionAnswered(mLastQuestionView);
-                 if (resultCode == QuestionActivity.ANSWERED_CORRECT) {
-
-                 } else {
-
-                 }
+                 ((QuestionAnsweredListener) getFragmentManager().findFragmentByTag("gameFrag"))
+                         .onQuestionAnswered(mLastQuestionView, resultCode == QuestionActivity.ANSWERED_CORRECT);
              }
          }
 }

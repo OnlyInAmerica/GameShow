@@ -7,5 +7,5 @@ import android.view.ViewGroup;
   */
  public interface QuestionAnsweredListener {
 
-    public void onQuestionAnswered(ViewGroup questionTile);
+    public void onQuestionAnswered(ViewGroup questionTile, boolean answeredCorrectly);
  }

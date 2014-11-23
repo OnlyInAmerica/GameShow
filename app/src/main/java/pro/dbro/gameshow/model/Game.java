@@ -19,4 +19,12 @@ public class Game {
         categories.add(category);
     }
 
+    public int countQuestions() {
+        int sum = 0;
+        for (Category category : categories) {
+            sum += category.questions.size();
+        }
+        return sum;
+    }
+
 }

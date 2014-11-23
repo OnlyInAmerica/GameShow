@@ -6,12 +6,10 @@ import android.util.Log;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import pro.dbro.gameshow.model.Category;
 import pro.dbro.gameshow.model.Game;
@@ -42,9 +40,10 @@ public class JeopardyClient {
                 try {
                     int totalQuestionsAdded = 0;
 
+                    int categoryOffset = (int) (Math.random() * 16690);
                     JsonArray categories = Ion.with(mContext)
-                            .load("http://jservice.io/api/categories?count=" + categoriesMissing)
-                            .asJsonArray().get();
+                                 .load(String.format("http://jservice.io/api/categories?offset=%d&count=%d", categoryOffset, categoriesMissing))
+                                 .asJsonArray().get();
 
                     for (JsonElement categoryJsonElement : categories) {
                         JsonObject categoryJson = categoryJsonElement.getAsJsonObject();

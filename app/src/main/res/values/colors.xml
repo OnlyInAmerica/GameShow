@@ -1,4 +1,5 @@
 <resources>
+    <color name="subdued_highlight">#ff8c8c8c</color>
     <color name="blue_title">#9dc3ff</color>
     <color name="blue_light">#ff0300ff</color>
     <color name="blue">#0200a0</color>

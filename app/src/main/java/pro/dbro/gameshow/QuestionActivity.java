@@ -94,11 +94,23 @@ public class QuestionActivity extends Activity {
             } else {
                 if (state == State.SELECT) {
                     ((TextView) findViewById(R.id.prompt)).setText(question.choices.get(0));
-                    ((TextView) findViewById(R.id.manualAnswer)).setText("Finish");
+
+                    findViewById(R.id.choiceContainer).setVisibility(View.VISIBLE);
+                    (findViewById(R.id.manualAnswer)).setVisibility(View.GONE);
+
+                    findViewById(R.id.choice1).setVisibility(View.INVISIBLE);
+
+                    ((TextView) findViewById(R.id.choice2)).setText("I got it");
+                    findViewById(R.id.choice2).setTag(true);
+
+                    ((TextView) findViewById(R.id.choice3)).setText("I didn't");
+                    findViewById(R.id.choice3).setTag(false);
+
+                    findViewById(R.id.choice4).setVisibility(View.INVISIBLE);
                     state = State.SHOWING_ANSWER;
-                } else {
-                    // TODO Get success
-                    finishWithQuestionResult(true);
+                } else if (state == State.SHOWING_ANSWER) {
+                    boolean answeredCorrectly = (boolean) getCurrentFocus().getTag();
+                    finishWithQuestionResult(answeredCorrectly);
                 }
             }
             return true;

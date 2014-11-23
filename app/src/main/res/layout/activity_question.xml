@@ -1,93 +1,92 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:animateLayoutChanges="true"
-    android:background="@color/blue_light"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:transitionName="sharedValue"
-    tools:context="pro.dbro.gameshow.QuestionActivity">
+     xmlns:tools="http://schemas.android.com/tools"
+     android:layout_width="match_parent"
+     android:layout_height="match_parent"
+     android:animateLayoutChanges="true"
+     android:background="@color/blue_light"
+     android:paddingBottom="@dimen/activity_vertical_margin"
+     android:paddingLeft="@dimen/activity_horizontal_margin"
+     android:paddingRight="@dimen/activity_horizontal_margin"
+     android:paddingTop="@dimen/activity_vertical_margin"
+     android:transitionName="sharedValue"
+     tools:context="pro.dbro.gameshow.QuestionActivity">
 
-    <TextView
-        android:id="@+id/prompt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:gravity="center"
-        android:textColor="@color/blue_title"
-        android:textSize="50sp" />
+     <TextView
+         android:id="@+id/prompt"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_centerInParent="true"
+         android:gravity="center"
+         android:textColor="@color/blue_title"
+         android:textSize="50sp" />
 
-    <LinearLayout
-        android:id="@+id/choiceContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_below="@id/prompt"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:weightSum="4">
+     <LinearLayout
+         android:id="@+id/choiceContainer"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:layout_alignParentBottom="true"
+         android:layout_below="@id/prompt"
+         android:gravity="center_vertical"
+         android:orientation="horizontal"
+         android:weightSum="4">
 
-        <TextView
-            android:id="@+id/choice1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/choice_bg"
-            android:focusable="true"
-            android:gravity="center"
-            android:textSize="20sp"
-            android:padding="16dp" />
+         <TextView
+             android:id="@+id/choice1"
+             android:layout_width="0dp"
+             android:layout_height="wrap_content"
+             android:layout_weight="1"
+             android:background="@drawable/choice_bg"
+             android:focusable="true"
+             android:gravity="center"
+             android:padding="16dp"
+             android:textSize="20sp" />
 
-        <TextView
-            android:id="@+id/choice2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/choice_bg"
-            android:focusable="true"
-            android:gravity="center"
-            android:textSize="20sp"
-            android:padding="16dp" />
+         <TextView
+             android:id="@+id/choice2"
+             android:layout_width="0dp"
+             android:layout_height="wrap_content"
+             android:layout_weight="1"
+             android:background="@drawable/choice_bg"
+             android:focusable="true"
+             android:gravity="center"
+             android:padding="16dp"
+             android:textSize="20sp" />
 
-        <TextView
-            android:id="@+id/choice3"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/choice_bg"
-            android:focusable="true"
-            android:gravity="center"
-            android:textSize="20sp"
-            android:padding="16dp" />
+         <TextView
+             android:id="@+id/choice3"
+             android:layout_width="0dp"
+             android:layout_height="wrap_content"
+             android:layout_weight="1"
+             android:background="@drawable/choice_bg"
+             android:focusable="true"
+             android:gravity="center"
+             android:padding="16dp"
+             android:textSize="20sp" />
 
-        <TextView
-            android:id="@+id/choice4"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/choice_bg"
-            android:focusable="true"
-            android:gravity="center"
-            android:textSize="20sp"
-            android:padding="16dp" />
+         <TextView
+             android:id="@+id/choice4"
+             android:layout_width="0dp"
+             android:layout_height="wrap_content"
+             android:layout_weight="1"
+             android:background="@drawable/choice_bg"
+             android:focusable="true"
+             android:gravity="center"
+             android:padding="16dp"
+             android:textSize="20sp" />
 
-    </LinearLayout>
+     </LinearLayout>
 
-    <TextView
-        android:id="@+id/manualAnswer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/prompt"
-        android:visibility="gone"
-        android:background="@drawable/choice_bg"
-        android:focusable="true"
-        android:text="Show Answer"
-        android:gravity="center_horizontal"
-        android:layout_centerHorizontal="true"
-        android:textSize="20sp"
-        android:padding="16dp" />
+     <TextView
+         android:id="@+id/manualAnswer"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_below="@id/prompt"
+         android:layout_centerHorizontal="true"
+         android:background="@drawable/choice_bg"
+         android:focusable="true"
+         android:padding="16dp"
+         android:text="Show Answer"
+         android:textSize="20sp"
+         android:visibility="gone" />
 
-</RelativeLayout>
+ </RelativeLayout>
