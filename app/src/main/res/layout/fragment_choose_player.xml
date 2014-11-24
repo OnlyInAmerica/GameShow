@@ -10,7 +10,7 @@
          android:layout_gravity="center"
          android:paddingTop="32dp"
          android:animateLayoutChanges="true"
-         android:background="@color/blue"
+         android:background="@drawable/jeoparty"
          android:gravity="center_horizontal"
          android:orientation="vertical">
 

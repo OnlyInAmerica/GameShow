@@ -4,10 +4,12 @@ import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -30,7 +32,7 @@ public class QuestionActivity extends Activity {
 
     private static int QUESTION_ANSWER_TIME_MS = 15 * 1000;
 
-    private static enum State {WILL_SHOW_ANSWER, WILL_SELECT_ANSWER, SHOWING_ANSWER}
+    private static enum State { WILL_SHOW_ANSWER, WILL_SELECT_ANSWER, SHOWING_ANSWER, OUT_OF_TIME }
 
     private Question question;
     private State state;
@@ -49,6 +51,8 @@ public class QuestionActivity extends Activity {
 
     @InjectView(R.id.timerBar)
     ProgressBar timerBar;
+
+    private static MediaPlayer sMediaPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,10 +75,18 @@ public class QuestionActivity extends Activity {
             showAnswer.setVisibility(View.VISIBLE);
         }
         startTimer();
+        if (sMediaPlayer == null) sMediaPlayer = MediaPlayer.create(this, R.raw.out_of_time);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (sMediaPlayer == null) sMediaPlayer.release();
     }
 
     private void startTimer() {
         ObjectAnimator animation = ObjectAnimator.ofInt(timerBar, "progress", 100, 0);
+        animation.setInterpolator(new LinearInterpolator());
         animation.setDuration(QUESTION_ANSWER_TIME_MS);
         animation.start();
         new CountDownTimer(QUESTION_ANSWER_TIME_MS, QUESTION_ANSWER_TIME_MS) {
@@ -84,7 +96,10 @@ public class QuestionActivity extends Activity {
 
             public void onFinish() {
                 if (state == State.WILL_SELECT_ANSWER || state == State.WILL_SHOW_ANSWER) {
-                    finishWithQuestionResult(false);
+                    sMediaPlayer.start();
+                    //finishWithQuestionResult(false);
+                    promptView.setText(question.choices.get(0));
+                    state = State.OUT_OF_TIME;
                 }
             }
         }.start();
@@ -92,6 +107,11 @@ public class QuestionActivity extends Activity {
 
     @OnClick(R.id.showAnswer)
          public void onShowAnswerClicked(View showAnswer) {
+             if (state == State.OUT_OF_TIME) {
+                 finishWithQuestionResult(false);
+                 return;
+             }
+             timerBar.setVisibility(View.INVISIBLE);
              promptView.setText(question.choices.get(0));
              choiceContainer.setVisibility(View.VISIBLE);
              showAnswer.setVisibility(View.GONE);
@@ -105,24 +125,28 @@ public class QuestionActivity extends Activity {
          }
 
     @OnClick({R.id.choice1, R.id.choice2, R.id.choice3, R.id.choice4})
-         public void onAnswerSelected(View selectedAnswerView) {
-             switch (state) {
-                 case WILL_SELECT_ANSWER:
-                     int selection = (int) selectedAnswerView.getTag();
-                     if (selection == question.correctChoice) {
-                         Toast.makeText(this, "CORRECT", Toast.LENGTH_SHORT).show();
-                         finishWithQuestionResult(true);
-                     } else {
-                         Toast.makeText(this, "WRONG", Toast.LENGTH_SHORT).show();
-                         finishWithQuestionResult(false);
-                     }
-                     break;
-                 case SHOWING_ANSWER:
-                     boolean answeredCorrectly = (boolean) getCurrentFocus().getTag();
-                     finishWithQuestionResult(answeredCorrectly);
-                     break;
-             }
-         }
+              public void onAnswerSelected(View selectedAnswerView) {
+                  switch (state) {
+                      case OUT_OF_TIME:
+                          finishWithQuestionResult(false);
+                          break;
+                      case WILL_SELECT_ANSWER:
+                          timerBar.setVisibility(View.INVISIBLE);
+                          int selection = (int) selectedAnswerView.getTag();
+                          if (selection == question.correctChoice) {
+                              Toast.makeText(this, "CORRECT", Toast.LENGTH_SHORT).show();
+                              finishWithQuestionResult(true);
+                          } else {
+                              Toast.makeText(this, "WRONG", Toast.LENGTH_SHORT).show();
+                              finishWithQuestionResult(false);
+                          }
+                          break;
+                      case SHOWING_ANSWER:
+                          boolean answeredCorrectly = (boolean) getCurrentFocus().getTag();
+                          finishWithQuestionResult(answeredCorrectly);
+                          break;
+                  }
+              }
 
     private void finishWithQuestionResult(boolean correctAnswer) {
         Intent result = new Intent(INTENT_ACTION);

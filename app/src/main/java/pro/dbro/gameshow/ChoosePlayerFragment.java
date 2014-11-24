@@ -3,8 +3,8 @@ package pro.dbro.gameshow;
 import android.app.Activity;
 import android.app.Fragment;
 import android.graphics.Typeface;
+import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -110,7 +110,8 @@ public class ChoosePlayerFragment extends Fragment {
 
     private void addNewPlayerEntryView(ViewGroup container, String name) {
         EditText playerEntry = new EditText(getActivity());
-        playerEntry.setHint(name == null ? getActivity().getString(R.string.new_player) : name);
+        playerEntry.setHint(getActivity().getString(R.string.new_player));
+        if (name != null) playerEntry.setText(name);
         playerEntry.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_user_white_small, 0, 0, 0);
         container.addView(playerEntry);
     }

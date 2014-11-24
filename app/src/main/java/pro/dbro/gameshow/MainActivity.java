@@ -17,6 +17,7 @@ package pro.dbro.gameshow;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -42,6 +43,10 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
 
     private Game mGame;
     private boolean mGameReady = false;
+
+    MediaPlayer mMediaPlayer;
+    MusicHandler mMusicHandler;
+    private final int MUSIC_FADE_DURATION = 2 * 1000;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -74,6 +79,10 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
 //        } catch(IOException e) {
 //            e.printStackTrace();
 //        }
+
+        mMusicHandler = new MusicHandler(this);
+        mMusicHandler.load(R.raw.jeopardy_theme, true);
+        mMusicHandler.play(MUSIC_FADE_DURATION);
     }
 
     @Override
@@ -110,12 +119,10 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
 
     @Override
     public void onPlayersSelected(List<Player> players) {
-        Log.i(TAG, String.format("Got %d players", players.size()));
         mGame.addPlayers(players);
 
-        Log.i(TAG, String.format("Game has %d total players", mGame.players.size()));
-
         if (mGameReady) {
+            mMusicHandler.stop(MUSIC_FADE_DURATION);
             GameFragment fragment = GameFragment.newInstance(mGame);
             getFragmentManager().beginTransaction()
                     .replace(R.id.container, fragment, "gameFrag")
@@ -123,5 +130,11 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
         } else {
             Log.e(TAG, "Game not ready upon player selection");
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mMusicHandler != null) mMusicHandler.release();
     }
 }
