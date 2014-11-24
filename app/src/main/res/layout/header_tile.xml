@@ -15,7 +15,7 @@
         android:shadowDx="4"
         android:shadowDy="4"
         android:shadowRadius="4"
-        android:textColor="@android:color/white"
+        android:textColor="@color/blue_title"
         android:textSize="30sp" />
 
 </RelativeLayout>
