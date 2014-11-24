@@ -100,6 +100,9 @@ public class QuestionActivity extends Activity {
                     //finishWithQuestionResult(false);
                     promptView.setText(question.choices.get(0));
                     state = State.OUT_OF_TIME;
+                    choiceContainer.setVisibility(View.GONE);
+                    showAnswer.setVisibility(View.VISIBLE);
+                    showAnswer.setText(getString(R.string.continue_on));
                 }
             }
         }.start();
