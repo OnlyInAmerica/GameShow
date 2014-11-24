@@ -23,6 +23,10 @@
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
          android:layout_centerInParent="true"
+         android:shadowColor="@android:color/black"
+         android:shadowDx="8"
+         android:shadowDy="8"
+         android:shadowRadius="8"
          android:gravity="center"
          android:textSize="50sp" />
 

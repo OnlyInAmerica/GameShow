@@ -9,6 +9,7 @@
         android:id="@+id/value"
         android:textColor="@color/gold"
         android:shadowColor="@android:color/black"
+        android:shadowDx="8"
         android:shadowDy="8"
         android:shadowRadius="8"
         android:layout_width="wrap_content"

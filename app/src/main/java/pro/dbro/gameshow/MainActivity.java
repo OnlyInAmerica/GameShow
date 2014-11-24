@@ -46,7 +46,7 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
 
     MediaPlayer mMediaPlayer;
     MusicHandler mMusicHandler;
-    private final int MUSIC_FADE_DURATION = 2 * 1000;
+    private final int MUSIC_FADE_DURATION = 4 * 1000;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
