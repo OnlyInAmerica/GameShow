@@ -8,5 +8,6 @@
     <string name="play">Play!</string>
     <string name="whos_playing">Who\'s Playing?</string>
     <string name="remove_player">Remove Player</string>
+    <string name="new_player">New Player</string>
 
 </resources>

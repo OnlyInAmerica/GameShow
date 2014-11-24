@@ -1,9 +1,11 @@
 package pro.dbro.gameshow;
 
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -25,6 +27,8 @@ public class QuestionActivity extends Activity {
     public static String INTENT_ACTION = "pro.dbro.gameshow.QuestionResult";
     public static int ANSWERED_CORRECT = 1;
     public static int ANSWERED_INCORRECT = 0;
+
+    private static int QUESTION_ANSWER_TIME_MS = 15 * 1000;
 
     private static enum State {WILL_SHOW_ANSWER, WILL_SELECT_ANSWER, SHOWING_ANSWER}
 
@@ -66,41 +70,59 @@ public class QuestionActivity extends Activity {
             choiceContainer.setVisibility(View.GONE);
             showAnswer.setVisibility(View.VISIBLE);
         }
+        startTimer();
+    }
+
+    private void startTimer() {
+        ObjectAnimator animation = ObjectAnimator.ofInt(timerBar, "progress", 100, 0);
+        animation.setDuration(QUESTION_ANSWER_TIME_MS);
+        animation.start();
+        new CountDownTimer(QUESTION_ANSWER_TIME_MS, QUESTION_ANSWER_TIME_MS) {
+
+            public void onTick(long millisUntilFinished) {
+            }
+
+            public void onFinish() {
+                if (state == State.WILL_SELECT_ANSWER || state == State.WILL_SHOW_ANSWER) {
+                    finishWithQuestionResult(false);
+                }
+            }
+        }.start();
     }
 
     @OnClick(R.id.showAnswer)
-    public void onShowAnswerClicked(View showAnswer) {
-        promptView.setText(question.choices.get(0));
-        choiceContainer.setVisibility(View.VISIBLE);
-        showAnswer.setVisibility(View.GONE);
-        choiceViews.get(0).setVisibility(View.INVISIBLE);
-        choiceViews.get(1).setText("I got it");
-        choiceViews.get(1).setTag(true);
-        choiceViews.get(2).setText("I didn't");
-        choiceViews.get(2).setTag(false);
-        choiceViews.get(3).setVisibility(View.INVISIBLE);
-        state = State.SHOWING_ANSWER;
-    }
-    
+         public void onShowAnswerClicked(View showAnswer) {
+             promptView.setText(question.choices.get(0));
+             choiceContainer.setVisibility(View.VISIBLE);
+             showAnswer.setVisibility(View.GONE);
+             choiceViews.get(0).setVisibility(View.INVISIBLE);
+             choiceViews.get(1).setText("I got it");
+             choiceViews.get(1).setTag(true);
+             choiceViews.get(2).setText("I didn't");
+             choiceViews.get(2).setTag(false);
+             choiceViews.get(3).setVisibility(View.INVISIBLE);
+             state = State.SHOWING_ANSWER;
+         }
+
     @OnClick({R.id.choice1, R.id.choice2, R.id.choice3, R.id.choice4})
-    public void onAnswerSelected(View selectedAnswerView) {
-        switch (state) {
-            case WILL_SELECT_ANSWER:
-                int selection = (int) selectedAnswerView.getTag();
-                if (selection == question.correctChoice) {
-                    Toast.makeText(this, "CORRECT", Toast.LENGTH_SHORT).show();
-                    finishWithQuestionResult(true);
-                } else {
-                    Toast.makeText(this, "WRONG", Toast.LENGTH_SHORT).show();
-                    finishWithQuestionResult(false);
-                }
-                break;
-            case SHOWING_ANSWER:
-                boolean answeredCorrectly = (boolean) getCurrentFocus().getTag();
-                finishWithQuestionResult(answeredCorrectly);
-                break;
-        }
-    }
+         public void onAnswerSelected(View selectedAnswerView) {
+             switch (state) {
+                 case WILL_SELECT_ANSWER:
+                     int selection = (int) selectedAnswerView.getTag();
+                     if (selection == question.correctChoice) {
+                         Toast.makeText(this, "CORRECT", Toast.LENGTH_SHORT).show();
+                         finishWithQuestionResult(true);
+                     } else {
+                         Toast.makeText(this, "WRONG", Toast.LENGTH_SHORT).show();
+                         finishWithQuestionResult(false);
+                     }
+                     break;
+                 case SHOWING_ANSWER:
+                     boolean answeredCorrectly = (boolean) getCurrentFocus().getTag();
+                     finishWithQuestionResult(answeredCorrectly);
+                     break;
+             }
+         }
 
     private void finishWithQuestionResult(boolean correctAnswer) {
         Intent result = new Intent(INTENT_ACTION);

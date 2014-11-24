@@ -45,7 +45,15 @@ public class ChoosePlayerFragment extends Fragment {
         Typeface gameShowFont = Typeface.createFromAsset(getActivity().getAssets(), "fonts/gyparody.ttf");
         mTitleView.setTypeface(gameShowFont);
 
-        addNewPlayerEntryView(mPlayerContainer);
+        List<Player> players = PreferencesManager.loadPlayers(getActivity());
+
+        if (players.size() == 0) {
+            addNewPlayerEntryView(mPlayerContainer);
+        } else {
+            for (Player player : players) {
+                addNewPlayerEntryView(mPlayerContainer, player.name);
+            }
+        }
 
         return root;
     }
@@ -80,32 +88,34 @@ public class ChoosePlayerFragment extends Fragment {
 
     @OnClick(R.id.removePlayerBtn)
     public void onRemovePlayerButtonClicked(View view) {
-        if (mPlayerContainer.getChildCount() > 0) mPlayerContainer.removeViewAt(mPlayerContainer.getChildCount() - 1);
+        if (mPlayerContainer.getChildCount() > 0)
+            mPlayerContainer.removeViewAt(mPlayerContainer.getChildCount() - 1);
     }
 
     @OnClick(R.id.playBtn)
     public void onPlayersSelected(View view) {
         ArrayList<Player> players = new ArrayList<>();
 
-        Log.i("players", "PlayerContainer has children: " + mPlayerContainer.getChildCount());
-        for(int x = 0; x < mPlayerContainer.getChildCount(); x++) {
+        for (int x = 0; x < mPlayerContainer.getChildCount(); x++) {
             Player player = new Player(((TextView) mPlayerContainer.getChildAt(x)).getText().toString());
             players.add(player);
-            Log.i("players", "Add player : " + player.name);
-
         }
+        PreferencesManager.savePlayers(getActivity(), players);
         mListener.onPlayersSelected(players);
     }
 
     private void addNewPlayerEntryView(ViewGroup container) {
+        addNewPlayerEntryView(container, null);
+    }
+
+    private void addNewPlayerEntryView(ViewGroup container, String name) {
         EditText playerEntry = new EditText(getActivity());
-        playerEntry.setHint("New Player");
+        playerEntry.setHint(name == null ? getActivity().getString(R.string.new_player) : name);
         playerEntry.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_user_white_small, 0, 0, 0);
         container.addView(playerEntry);
     }
 
     public interface OnPlayersSelectedListener {
-        // TODO: Update argument type and name
         public void onPlayersSelected(List<Player> players);
     }
 
