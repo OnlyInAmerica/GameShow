@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -120,6 +121,7 @@ public class ChoosePlayerFragment extends Fragment {
 
     private void addNewPlayerEntryView(ViewGroup container, String name) {
         EditText playerEntry = new EditText(getActivity());
+        playerEntry.setImeOptions(EditorInfo.IME_ACTION_DONE);
         playerEntry.setHint(getActivity().getString(R.string.new_player));
         if (name != null) playerEntry.setText(name);
         playerEntry.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_user_white_small, 0, 0, 0);
