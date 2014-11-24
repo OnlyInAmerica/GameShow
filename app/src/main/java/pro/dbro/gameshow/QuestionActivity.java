@@ -1,23 +1,23 @@
 package pro.dbro.gameshow;
 
 import android.app.Activity;
- import android.content.Intent;
- import android.graphics.Typeface;
- import android.os.Bundle;
- import android.view.KeyEvent;
- import android.view.View;
- import android.view.ViewGroup;
- import android.widget.Button;
- import android.widget.TextView;
- import android.widget.Toast;
+import android.content.Intent;
+import android.graphics.Typeface;
+import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
- import java.util.List;
+import java.util.List;
 
- import butterknife.ButterKnife;
- import butterknife.InjectView;
- import butterknife.InjectViews;
- import butterknife.OnClick;
- import pro.dbro.gameshow.model.Question;
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.InjectViews;
+import butterknife.OnClick;
+import pro.dbro.gameshow.model.Question;
 
 
 public class QuestionActivity extends Activity {
@@ -43,6 +43,9 @@ public class QuestionActivity extends Activity {
      @InjectViews({R.id.choice1, R.id.choice2, R.id.choice3, R.id.choice4})
      List<Button> choiceViews;
 
+    @InjectView(R.id.timerBar)
+    ProgressBar timerBar;
+
      @Override
      protected void onCreate(Bundle savedInstanceState) {
          super.onCreate(savedInstanceState);
@@ -51,9 +54,9 @@ public class QuestionActivity extends Activity {
 
          question = (Question) getIntent().getExtras().getSerializable("question");
 
-         Typeface tileFont = Typeface.createFromAsset(getAssets(), "fonts/Korinna_Bold.ttf");
+         final Typeface promptTypeface = Typeface.createFromAsset(getAssets(), "fonts/Korinna_Bold.ttf");
 
-         promptView.setTypeface(tileFont);
+         promptView.setTypeface(promptTypeface);
          promptView.setText(question.prompt.toUpperCase());
 
          if (question.choices.size() > 1) {

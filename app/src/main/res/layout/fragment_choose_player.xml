@@ -1,0 +1,70 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:tools="http://schemas.android.com/tools"
+     android:layout_width="match_parent"
+     android:layout_height="match_parent"
+     tools:context="pro.dbro.gameshow.ChoosePlayerFragment">
+
+     <LinearLayout
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:layout_gravity="center"
+         android:paddingTop="32dp"
+         android:animateLayoutChanges="true"
+         android:background="@color/blue"
+         android:gravity="center_horizontal"
+         android:orientation="vertical">
+
+         <TextView
+             android:id="@+id/title"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="@string/jeoparty"
+             android:textSize="80sp" />
+
+         <TextView
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:padding="16dp"
+             android:text="@string/whos_playing" />
+
+         <LinearLayout
+             android:id="@+id/playerContainer"
+             android:layout_width="400dp"
+             android:layout_height="wrap_content"
+             android:animateLayoutChanges="true"
+             android:orientation="vertical">
+
+         </LinearLayout>
+
+         <LinearLayout
+             android:id="@+id/buttonContainer"
+             style="?android:attr/buttonBarStyle"
+             android:layout_width="400dp"
+             android:layout_height="wrap_content"
+             android:gravity="center_horizontal"
+             android:orientation="horizontal">
+
+             <Button
+                 android:id="@+id/addPlayerBtn"
+                 style="?android:attr/buttonBarButtonStyle"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:text="@string/add_another_player" />
+
+             <Button
+                 android:id="@+id/removePlayerBtn"
+                 style="?android:attr/buttonBarButtonStyle"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:text="@string/remove_player" />
+
+             <Button
+                 android:id="@+id/playBtn"
+                 style="?android:attr/buttonBarButtonStyle"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:text="@string/play" />
+
+         </LinearLayout>
+     </LinearLayout>
+ </FrameLayout>

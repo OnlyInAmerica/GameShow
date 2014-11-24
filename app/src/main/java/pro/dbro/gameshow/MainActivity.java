@@ -18,9 +18,12 @@ import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import java.util.List;
 
 import pro.dbro.gameshow.model.Game;
 import pro.dbro.gameshow.model.Player;
@@ -29,11 +32,16 @@ import pro.dbro.gameshow.model.Question;
 /*
  * MainActivity class that loads MainFragment
  */
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements ChoosePlayerFragment.OnPlayersSelectedListener {
+
+    private String TAG = getClass().getSimpleName();
 
     public static final int ANSWER_QUESTION = 0;
 
     private ViewGroup mLastQuestionView;
+
+    private Game mGame;
+    private boolean mGameReady = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -49,31 +57,28 @@ public class MainActivity extends Activity {
 //
 //            Game game = gson.fromJson(reader, Game.class);
 
-            Game game = new Game();
+        mGame = new Game();
 
-            Player sav = new Player("Savvy J");
-            Player dbro = new Player("dbro");
-            game.addPlayer(sav);
-            game.addPlayer(dbro);
+        JeopardyClient client = new JeopardyClient(this);
+        client.completeGame(mGame, new JeopardyClient.GameCompleteCallback() {
+            @Override
+            public void onGameComplete(Game game) {
+                mGameReady = true;
+            }
+        });
 
-            JeopardyClient client = new JeopardyClient(this);
-            client.completeGame(game, new JeopardyClient.GameCompleteCallback() {
-                @Override
-                public void onGameComplete(Game game) {
-                    GameFragment fragment = GameFragment.newInstance(game);
-                    getFragmentManager().beginTransaction()
-                            .add(R.id.container, fragment, "gameFrag")
-                            .commit();
-                }
-            });
+        ChoosePlayerFragment fragment = new ChoosePlayerFragment();
+        getFragmentManager().beginTransaction()
+                .add(R.id.container, fragment, "choosePlayerFrag")
+                .commit();
 //        } catch(IOException e) {
 //            e.printStackTrace();
 //        }
     }
 
     @Override
-    public boolean onKeyDown (int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER && getCurrentFocus() != null) {
 //            ((ViewClickHandler) getFragmentManager().findFragmentByTag("gameFrag")).onViewClicked(getCurrentFocus());
             getCurrentFocus().setTransitionName("sharedValue");
             Intent intent = new Intent(this, QuestionActivity.class);
@@ -94,12 +99,29 @@ public class MainActivity extends Activity {
     }
 
     @Override
-         protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-             // Check which request we're responding to
-             if (requestCode == ANSWER_QUESTION) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if (requestCode == ANSWER_QUESTION) {
 
-                 ((QuestionAnsweredListener) getFragmentManager().findFragmentByTag("gameFrag"))
-                         .onQuestionAnswered(mLastQuestionView, resultCode == QuestionActivity.ANSWERED_CORRECT);
-             }
-         }
+            ((QuestionAnsweredListener) getFragmentManager().findFragmentByTag("gameFrag"))
+                    .onQuestionAnswered(mLastQuestionView, resultCode == QuestionActivity.ANSWERED_CORRECT);
+        }
+    }
+
+    @Override
+    public void onPlayersSelected(List<Player> players) {
+        Log.i(TAG, String.format("Got %d players", players.size()));
+        mGame.addPlayers(players);
+
+        Log.i(TAG, String.format("Game has %d total players", mGame.players.size()));
+
+        if (mGameReady) {
+            GameFragment fragment = GameFragment.newInstance(mGame);
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.container, fragment, "gameFrag")
+                    .commit();
+        } else {
+            Log.e(TAG, "Game not ready upon player selection");
+        }
+    }
 }

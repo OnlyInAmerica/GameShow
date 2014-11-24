@@ -30,8 +30,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="pro.dbro.gameshow.QuestionActivity"
-            android:label="@string/title_activity_question" >
+            android:name="pro.dbro.gameshow.QuestionActivity" >
         </activity>
     </application>
 

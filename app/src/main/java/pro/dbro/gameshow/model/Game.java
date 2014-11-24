@@ -26,6 +26,10 @@ public class Game {
         players.add(player);
     }
 
+    public void addPlayers(List<Player> players) {
+        this.players.addAll(players);
+    }
+
     public int countQuestions() {
         int sum = 0;
         for (Category category : categories) {
