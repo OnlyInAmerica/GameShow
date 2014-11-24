@@ -90,13 +90,14 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
                 .commit();
 
         mMusicHandler = new MusicHandler(this);
-        mMusicHandler.load(R.raw.jeopardy_theme, true);
+        mMusicHandler.load(R.raw.theme, true);
         mMusicHandler.play(MUSIC_FADE_DURATION);
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER && getCurrentFocus() != null) {
+        if ( (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_A) &&
+                getCurrentFocus() != null) {
 //            ((ViewClickHandler) getFragmentManager().findFragmentByTag("gameFrag")).onViewClicked(getCurrentFocus());
             getCurrentFocus().setTransitionName("sharedValue");
             Intent intent = new Intent(this, QuestionActivity.class);

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">GameShow</string>
+    <string name="app_name">JEOPARTY!</string>
     <string name="show_answer">Show Answer</string>
-    <string name="jeoparty">JEOPARTY™</string>
+    <string name="jeoparty">JEOPARTY!™</string>
     <string name="add_another_player">Add Player</string>
     <string name="play">Play!</string>
     <string name="whos_playing">Who\'s Playing?</string>

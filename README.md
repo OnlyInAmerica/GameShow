@@ -1,4 +1,4 @@
-# [JeoParty](https://github.com/OnlyInAmerica/Gameshow)
+# [GameShow](https://github.com/OnlyInAmerica/Gameshow)
 
 [![Screenshot](http://i.imgur.com/rU8QmaK.png)](http://i.imgur.com/rU8QmaK.png)
 [![Screenshot](http://i.imgur.com/e4aJZZh.jpg)](http://i.imgur.com/e4aJZZh.jpg)

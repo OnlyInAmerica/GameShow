@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">GameShow!</string>
+    <string name="show_answer">Show Answer</string>
+    <string name="jeoparty">GameShow!</string>
+    <string name="add_another_player">Add Player</string>
+    <string name="play">Play!</string>
+    <string name="whos_playing">Who\'s Playing?</string>
+    <string name="remove_player">Remove Player</string>
+    <string name="new_player">New Player</string>
+    <string name="continue_on">Continue</string>
+    <string name="dollar_sign">$</string>
+    <string name="everybody_wins">Everybody Wins!</string>
+    <string name="pathetic">Pathetic.</string>
+    <string name="win">Win!</string>
+    <string name="wins">Wins!</string>
+    <string name="play_again">Play Again</string>
+    <string name="quit">Quit</string>
+
+</resources>
