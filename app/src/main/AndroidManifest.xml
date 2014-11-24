@@ -17,7 +17,8 @@
         android:icon="@drawable/ic_launcher"
         android:banner="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/Theme.Leanback" >
+        android:theme="@style/Theme.Leanback"
+        android:isGame="true" >
         <activity
             android:name="pro.dbro.gameshow.MainActivity"
             android:label="@string/app_name"

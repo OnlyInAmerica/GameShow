@@ -1,9 +1,9 @@
 {
-	"categories": [
-		{
-			"title": "John's Basement",
-			"questions": [
-			    {
+    "categories": [
+        {
+            "title": "John's Basement",
+            "questions": [
+                {
                     "value": 200,
                     "prompt": "This shortcut halved the time required to transit from Chesterbrook to Summerhill",
                     "choices": [
@@ -11,7 +11,7 @@
                     ],
                     "correctChoice" : 3
                 },
-			    {
+                {
                     "value": 300,
                     "prompt": "\"JOOHHN! There's breakfast on the table and ____ on the computer!\"",
                     "choices": [
@@ -19,7 +19,7 @@
                     ],
                     "correctChoice" : 2
                 },
-			    {
+                {
                     "value": 400,
                     "prompt": "This expired mouse was a permanent resident of the boiler room.",
                     "choices": [
@@ -27,14 +27,14 @@
                     ],
                     "correctChoice" : 0
                 },
-				{
-					"value": 500,
-					"prompt": "The distinct red dye of this Dextromethorphan lozenge colored the couch cushions of John's basement.",
-					"choices": [
-						"Delsym", "Sucrets", "Robitussin", "Cheratussin"
-					],
-					"correctChoice" : 1
-				},
+                {
+                    "value": 500,
+                    "prompt": "The distinct red dye of this Dextromethorphan lozenge colored the couch cushions of John's basement.",
+                    "choices": [
+                        "Delsym", "Sucrets", "Robitussin", "Cheratussin"
+                    ],
+                    "correctChoice" : 1
+                },
                 {
                     "value": 600,
                     "prompt": "The kitchen clock issued an hourly sound of this variety.",
@@ -43,10 +43,7 @@
                     ],
                     "correctChoice" : 0
                 }
-			]
-		}
-	],
-	"players" : [
-
-	]
+            ]
+        }
+    ]
 }
