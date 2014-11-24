@@ -11,5 +11,11 @@
     <string name="new_player">New Player</string>
     <string name="continue_on">Continue</string>
     <string name="dollar_sign">$</string>
+    <string name="everybody_wins">Everybody Wins!</string>
+    <string name="pathetic">Pathetic.</string>
+    <string name="win">Win!</string>
+    <string name="wins">Wins!</string>
+    <string name="play_again">Play Again</string>
+    <string name="quit">Quit</string>
 
 </resources>

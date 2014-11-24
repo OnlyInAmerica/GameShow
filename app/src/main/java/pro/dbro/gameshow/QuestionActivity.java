@@ -151,6 +151,7 @@ public class QuestionActivity extends Activity {
         choiceViews.get(1).setTag(true);
         choiceViews.get(2).setText("I didn't");
         choiceViews.get(2).setTag(false);
+        choiceViews.get(2).requestFocus();
         choiceViews.get(3).setVisibility(View.INVISIBLE);
         state = State.SHOWING_ANSWER;
     }

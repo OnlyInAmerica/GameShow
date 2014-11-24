@@ -16,6 +16,8 @@ package pro.dbro.gameshow;
 
 import android.app.Activity;
 import android.app.ActivityOptions;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -33,7 +35,7 @@ import pro.dbro.gameshow.model.Question;
 /*
  * MainActivity class that loads MainFragment
  */
-public class MainActivity extends Activity implements ChoosePlayerFragment.OnPlayersSelectedListener {
+public class MainActivity extends Activity implements ChoosePlayerFragment.OnPlayersSelectedListener, GameFragment.GameListener {
 
     private String TAG = getClass().getSimpleName();
 
@@ -63,6 +65,13 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
 //
 //            Game game = gson.fromJson(reader, Game.class);
 
+        createGame();
+        showChoosePlayerFragment();
+    }
+
+    private void createGame() {
+        mAddedPlayers = false;
+        mGameReady = false;
         mGame = new Game();
 
         JeopardyClient client = new JeopardyClient(this);
@@ -72,14 +81,13 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
                 mGameReady = true;
             }
         });
+    }
 
+    private void showChoosePlayerFragment() {
         ChoosePlayerFragment fragment = new ChoosePlayerFragment();
         getFragmentManager().beginTransaction()
-                .add(R.id.container, fragment, "choosePlayerFrag")
+                .replace(R.id.container, fragment, "choosePlayerFrag")
                 .commit();
-//        } catch(IOException e) {
-//            e.printStackTrace();
-//        }
 
         mMusicHandler = new MusicHandler(this);
         mMusicHandler.load(R.raw.jeopardy_theme, true);
@@ -140,5 +148,45 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
     public void onDestroy() {
         super.onDestroy();
         if (mMusicHandler != null) mMusicHandler.release();
+    }
+
+    @Override
+    public void onGameComplete(List<Player> winners) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        StringBuilder winnerString = new StringBuilder();
+
+        if (winners.size() == mGame.players.size()) {
+            winnerString.append(getString(R.string.everybody_wins));
+            builder.setMessage(getString(R.string.pathetic));
+        } else {
+            for (int x = 0; x < winners.size(); x++) {
+                winnerString.append(winners.get(x).name);
+                if (winners.size() > x + 1) winnerString.append(", ");
+                winnerString.append(" ");
+            }
+
+            if (winners.size() > 1)
+                winnerString.append(getString(R.string.win));
+            else
+                winnerString.append(getString(R.string.wins));
+        }
+
+        builder.setTitle(winnerString.toString());
+        builder.setPositiveButton(getString(R.string.play_again), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                mGameReady = false;
+                createGame();
+                showChoosePlayerFragment();
+            }
+        });
+        builder.setNegativeButton(getString(R.string.quit), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                MainActivity.this.finish();
+            }
+        });
+        builder.show();
     }
 }

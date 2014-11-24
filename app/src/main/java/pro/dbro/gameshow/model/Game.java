@@ -38,4 +38,21 @@ public class Game {
         return sum;
     }
 
+    public List<Player> getWinners() {
+        ArrayList<Player> winners = new ArrayList<>();
+        int topScore = 0;
+
+        for (Player player : players) {
+            if (player.score > topScore) {
+                winners.clear();
+                topScore = player.score;
+                winners.add(player);
+            } else if (player.score == topScore) {
+                winners.add(player);
+            }
+        }
+
+        return winners;
+    }
+
 }

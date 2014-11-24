@@ -1,6 +1,7 @@
 package pro.dbro.gameshow;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Fragment;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -34,6 +35,8 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
     private int questionsAnswered;
 
     @InjectView(R.id.playerGroup) RadioGroup playerGroup;
+
+    private GameListener mListener;
 
     public static GameFragment newInstance(Game game) {
         GameFragment fragment = new GameFragment(game);
@@ -75,6 +78,7 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
 
         for (Player player : players) {
             RadioButton playerButton = new RadioButton(getActivity());
+            playerButton.setFocusable(false);
             playerButton.setBackgroundResource(R.drawable.player_bg);
             playerButton.setText(String.format("%s: %d", player.name, player.score));
             playerButton.setTypeface(tileFont);
@@ -137,6 +141,23 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
     }
 
     @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mListener = (GameListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    @Override
     public void onQuestionAnswered(ViewGroup questionTile, boolean answeredCorrectly) {
         questionsAnswered++;
 
@@ -150,9 +171,9 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
 
         advanceCurrentPlayer();
 
-        Log.i(TAG, String.format("Answered %d/%d questions", questionsAnswered, game.countQuestions()));
+//        Log.i(TAG, String.format("Answered %d/%d questions", questionsAnswered, game.countQuestions()));
         if (questionsAnswered == game.countQuestions()) {
-            Toast.makeText(getActivity(), "GAME OVER", Toast.LENGTH_SHORT).show();
+            mListener.onGameComplete(game.getWinners());
         }
     }
 
@@ -181,6 +202,10 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
         int playerNumber = game.players.indexOf(player);
         ((RadioButton) playerGroup.getChildAt(playerNumber))
                 .setText(String.format("%s: %d", player.name, player.score));
+    }
+
+    public interface GameListener {
+        public void onGameComplete(List<Player> winners);
     }
 
 }
