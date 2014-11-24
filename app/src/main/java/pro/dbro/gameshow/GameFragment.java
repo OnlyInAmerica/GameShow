@@ -60,7 +60,7 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
         ButterKnife.inject(this, root);
 
         Typeface gameShowFont = Typeface.createFromAsset(getActivity().getAssets(), "fonts/gyparody.ttf");
-        Typeface tileFont     = Typeface.createFromAsset(getActivity().getAssets(), "fonts/swiss_911.ttf");
+        Typeface tileFont     = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Swiss_911_Extra_Compressed.ttf");
 
         TextView headerTitle = ButterKnife.findById(root, R.id.header);
         headerTitle.setTypeface(gameShowFont);
@@ -102,29 +102,29 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
 
 
             for (int y = 0; y < NUM_COLS; y++) {
-                ViewGroup tile;
                 TableRow.LayoutParams params = new TableRow.LayoutParams(0, TableRow.LayoutParams.MATCH_PARENT, 1f);
                 params.setMargins(5, 5, 5, 5);
 
                 if (x == 0) {
-                    tile = (ViewGroup) inflater.inflate(R.layout.header_tile, row, false);
-                    tile.setFocusable(false);
-                    ((TextView) tile.findViewById(R.id.value)).setText(game.categories.get(y).title.toUpperCase());
+                    TextView categoryTile = (TextView) inflater.inflate(R.layout.category_tile, row, false);
+                    categoryTile.setText(game.categories.get(y).title.toUpperCase());
+                    categoryTile.setLayoutParams(params);
+                    categoryTile.setTypeface(tileFont);
+                    row.addView(categoryTile);
                 } else {
-                    tile = (ViewGroup) inflater.inflate(R.layout.question_tile, row, false);
+                    ViewGroup questionTile = (ViewGroup) inflater.inflate(R.layout.question_tile, row, false);
+                    ((TextView) questionTile.findViewById(R.id.dollarSign)).setTypeface(tileFont);
                     if (game.categories.get(y).questions.size() > (x - 1)) {
-                        ((TextView) tile.findViewById(R.id.value)).setText(String.format("$%d",
+                        ((TextView) questionTile.findViewById(R.id.value)).setText(String.format("%d",
                                 game.categories.get(y).questions.get(x - 1).value));
-                        tile.setTag(game.categories.get(y).questions.get(x - 1));
+                        questionTile.setTag(game.categories.get(y).questions.get(x - 1));
                     } else {
-                        tile.setFocusable(false);
+                        questionTile.setFocusable(false);
                     }
+                    ((TextView) questionTile.findViewById(R.id.value)).setTypeface(tileFont);
+                    questionTile.setLayoutParams(params);
+                    row.addView(questionTile);
                 }
-
-                tile.setLayoutParams(params);
-
-                ((TextView) tile.findViewById(R.id.value)).setTypeface(tileFont);
-                row.addView(tile);
             }
         }
         return root;
@@ -180,7 +180,7 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
 
         int playerNumber = game.players.indexOf(player);
         ((RadioButton) playerGroup.getChildAt(playerNumber))
-                .setText(String.format("%s:%d", player.name, player.score));
+                .setText(String.format("%s: %d", player.name, player.score));
     }
 
 }

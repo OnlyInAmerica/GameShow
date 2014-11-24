@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -23,12 +24,16 @@ import pro.dbro.gameshow.model.Player;
 public class ChoosePlayerFragment extends Fragment {
 
     private static final int MAX_PLAYERS = 4;
+    private static final int MIN_PLAYERS = 1;
 
     @InjectView(R.id.title)
     TextView mTitleView;
 
     @InjectView(R.id.playerContainer)
     LinearLayout mPlayerContainer;
+
+    @InjectView(R.id.playBtn)
+    Button mPlayButton;
 
     private OnPlayersSelectedListener mListener;
 
@@ -53,6 +58,7 @@ public class ChoosePlayerFragment extends Fragment {
             for (Player player : players) {
                 addNewPlayerEntryView(mPlayerContainer, player.name);
             }
+            mPlayButton.requestFocus();
         }
 
         return root;
@@ -83,21 +89,25 @@ public class ChoosePlayerFragment extends Fragment {
 
     @OnClick(R.id.addPlayerBtn)
     public void onAddPlayerButtonClicked(View view) {
-        if (mPlayerContainer.getChildCount() < MAX_PLAYERS) addNewPlayerEntryView(mPlayerContainer);
+        if (mPlayerContainer.getChildCount() < MAX_PLAYERS)
+            addNewPlayerEntryView(mPlayerContainer);
     }
 
     @OnClick(R.id.removePlayerBtn)
     public void onRemovePlayerButtonClicked(View view) {
-        if (mPlayerContainer.getChildCount() > 0)
+        if (mPlayerContainer.getChildCount() > MIN_PLAYERS)
             mPlayerContainer.removeViewAt(mPlayerContainer.getChildCount() - 1);
     }
 
     @OnClick(R.id.playBtn)
     public void onPlayersSelected(View view) {
+        if (mPlayerContainer.getChildCount() < MIN_PLAYERS) return;
+
         ArrayList<Player> players = new ArrayList<>();
 
         for (int x = 0; x < mPlayerContainer.getChildCount(); x++) {
             Player player = new Player(((TextView) mPlayerContainer.getChildAt(x)).getText().toString());
+            if (player.name.length() == 0) player.name = "Buck";
             players.add(player);
         }
         PreferencesManager.savePlayers(getActivity(), players);

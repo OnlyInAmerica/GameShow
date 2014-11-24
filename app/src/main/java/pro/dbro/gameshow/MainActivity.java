@@ -43,6 +43,7 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
 
     private Game mGame;
     private boolean mGameReady = false;
+    private boolean mAddedPlayers = false;
 
     MediaPlayer mMediaPlayer;
     MusicHandler mMusicHandler;
@@ -119,7 +120,10 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
 
     @Override
     public void onPlayersSelected(List<Player> players) {
-        mGame.addPlayers(players);
+        if (!mAddedPlayers) {
+            mGame.addPlayers(players);
+            mAddedPlayers = true;
+        }
 
         if (mGameReady) {
             mMusicHandler.stop(MUSIC_FADE_DURATION);

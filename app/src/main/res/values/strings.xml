@@ -10,5 +10,6 @@
     <string name="remove_player">Remove Player</string>
     <string name="new_player">New Player</string>
     <string name="continue_on">Continue</string>
+    <string name="dollar_sign">$</string>
 
 </resources>

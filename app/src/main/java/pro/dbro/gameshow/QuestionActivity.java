@@ -16,6 +16,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -50,6 +52,18 @@ public class QuestionActivity extends Activity {
     @InjectViews({R.id.choice1, R.id.choice2, R.id.choice3, R.id.choice4})
     List<Button> choiceViews;
 
+//    @InjectView(R.id.choice1)
+//    Button choice1;
+//
+//    @InjectView(R.id.choice2)
+//    Button choice2;
+//
+//    @InjectView(R.id.choice3)
+//    Button choice3;
+//
+//    @InjectView(R.id.choice4)
+//    Button choice4;
+
     @InjectView(R.id.timerBar)
     ProgressBar timerBar;
 
@@ -61,6 +75,10 @@ public class QuestionActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_question);
         ButterKnife.inject(this);
+
+        // Workaround for ButterKnife @InjectViews order
+//        choiceViews = new ArrayList<Button>() {{ add(choice1); add(choice2); add(choice3); add(choice4); }};
+
         question = (Question) getIntent().getExtras().getSerializable("question");
         final Typeface promptTypeface = Typeface.createFromAsset(getAssets(), "fonts/Korinna_Bold.ttf");
         promptView.setTypeface(promptTypeface);
@@ -155,7 +173,7 @@ public class QuestionActivity extends Activity {
                 }
                 break;
             case SHOWING_ANSWER:
-                boolean answeredCorrectly = (boolean) getCurrentFocus().getTag();
+                boolean answeredCorrectly = (boolean) selectedAnswerView.getTag();
                 finishWithQuestionResult(answeredCorrectly);
                 break;
         }

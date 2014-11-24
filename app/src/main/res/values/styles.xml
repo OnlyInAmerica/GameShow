@@ -3,5 +3,4 @@
     <style name="AppTheme" parent="@style/Theme.Leanback">
         <item name="android:windowContentTransitions">true</item>
     </style>
-
 </resources>
