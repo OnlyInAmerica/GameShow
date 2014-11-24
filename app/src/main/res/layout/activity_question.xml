@@ -61,17 +61,34 @@
              android:layout_height="wrap_content"
              android:layout_weight="1"
              android:background="@drawable/choice_bg"
+             android:nextFocusLeft="@+id/choice2"
              android:focusable="true"
              android:gravity="center"
              android:padding="16dp"
              android:textSize="20sp" />
 
          <Button
-             android:id="@+id/choice2"
+             android:id="@id/choice2"
              style="?android:attr/buttonBarButtonStyle"
              android:layout_width="0dp"
              android:layout_height="wrap_content"
              android:layout_weight="1"
+             android:nextFocusRight="@id/choice1"
+             android:background="@drawable/choice_bg"
+             android:nextFocusLeft="@+id/choice3"
+             android:focusable="true"
+             android:gravity="center"
+             android:padding="16dp"
+             android:textSize="20sp" />
+
+         <Button
+             android:id="@id/choice3"
+             style="?android:attr/buttonBarButtonStyle"
+             android:layout_width="0dp"
+             android:layout_height="wrap_content"
+             android:layout_weight="1"
+             android:nextFocusRight="@id/choice2"
+             android:nextFocusLeft="@+id/choice4"
              android:background="@drawable/choice_bg"
              android:focusable="true"
              android:gravity="center"
@@ -79,24 +96,13 @@
              android:textSize="20sp" />
 
          <Button
-             android:id="@+id/choice3"
+             android:id="@id/choice4"
              style="?android:attr/buttonBarButtonStyle"
              android:layout_width="0dp"
              android:layout_height="wrap_content"
              android:layout_weight="1"
              android:background="@drawable/choice_bg"
-             android:focusable="true"
-             android:gravity="center"
-             android:padding="16dp"
-             android:textSize="20sp" />
-
-         <Button
-             android:id="@+id/choice4"
-             style="?android:attr/buttonBarButtonStyle"
-             android:layout_width="0dp"
-             android:layout_height="wrap_content"
-             android:layout_weight="1"
-             android:background="@drawable/choice_bg"
+             android:nextFocusRight="@id/choice3"
              android:focusable="true"
              android:gravity="center"
              android:padding="16dp"
