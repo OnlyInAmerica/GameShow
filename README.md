@@ -18,8 +18,10 @@ Make sure you've installed the following items from the Android SDK Manager:
 ```
 $ git clone https://github.com/OnlyInAmerica/GameShow.git
 $ cd GameShow
-$ ./gradlew assembleDebug
-$ adb install -r ./app/build/outputs/apk/app-debug.apk
+# You have two options for building:
+$ ./gradlew assembleCriminalDebug # Jeopardy theme
+$ ./gradlew assembleRoyaltyFreeDebug # Royalty-free theme
+$ adb install -r ./app/build/outputs/apk/app-royaltyFree-debug.apk # or app-criminal-debug.apk
 ```
 
 ## License
