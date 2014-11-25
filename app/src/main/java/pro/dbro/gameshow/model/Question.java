@@ -12,4 +12,10 @@ public class Question implements Serializable {
     public String prompt;
     public List<String> choices;
     public int correctChoice;
+
+    public String getAnswer() {
+        if (choices.size() == 1) return choices.get(0);
+
+        return choices.get(correctChoice);
+    }
 }

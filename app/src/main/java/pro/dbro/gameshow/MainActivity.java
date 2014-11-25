@@ -152,6 +152,14 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        if (mMusicHandler != null && mMusicHandler.isPlaying()) {
+            mMusicHandler.stop(MUSIC_FADE_DURATION);
+        }
+    }
+
+    @Override
     public void onGameComplete(List<Player> winners) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         StringBuilder winnerString = new StringBuilder();

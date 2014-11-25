@@ -7,6 +7,10 @@ import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,8 +20,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import org.apache.airavata.samples.LevenshteinDistanceService;
+
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -28,6 +32,7 @@ import pro.dbro.gameshow.model.Question;
 
 
 public class QuestionActivity extends Activity {
+    public final String TAG = this.getClass().getSimpleName();
 
     public static String INTENT_ACTION = "pro.dbro.gameshow.QuestionResult";
     public static int ANSWERED_CORRECT = 1;
@@ -35,7 +40,7 @@ public class QuestionActivity extends Activity {
 
     private static int QUESTION_ANSWER_TIME_MS = 15 * 1000;
 
-    private static enum State {WILL_SHOW_ANSWER, WILL_SELECT_ANSWER, SHOWING_ANSWER, OUT_OF_TIME}
+    private static enum State { WILL_SPEAK_ANSWER, SPEAKING_ANSWER, WILL_SELECT_ANSWER, SHOWING_ANSWER, OUT_OF_TIME }
 
     private Question question;
     private State state;
@@ -46,29 +51,18 @@ public class QuestionActivity extends Activity {
     @InjectView(R.id.choiceContainer)
     ViewGroup choiceContainer;
 
-    @InjectView(R.id.showAnswer)
+    @InjectView(R.id.speakAnswer)
     Button showAnswer;
 
     @InjectViews({R.id.choice1, R.id.choice2, R.id.choice3, R.id.choice4})
     List<Button> choiceViews;
-
-//    @InjectView(R.id.choice1)
-//    Button choice1;
-//
-//    @InjectView(R.id.choice2)
-//    Button choice2;
-//
-//    @InjectView(R.id.choice3)
-//    Button choice3;
-//
-//    @InjectView(R.id.choice4)
-//    Button choice4;
 
     @InjectView(R.id.timerBar)
     ProgressBar timerBar;
 
     private static MediaPlayer sMediaPlayer;
     private CountDownTimer mCountdownTimer;
+    private SpeechRecognizer mSpeechRecognizer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,11 +80,11 @@ public class QuestionActivity extends Activity {
         if (question.choices.size() > 1) {
             state = State.WILL_SELECT_ANSWER;
             for (int x = 0; x < question.choices.size(); x++) {
-                choiceViews.get(x).setText(question.choices.get(x));
+                choiceViews.get(x).setText(question.getAnswer());
                 choiceViews.get(x).setTag(x);
             }
         } else {
-            state = State.WILL_SHOW_ANSWER;
+            state = State.WILL_SPEAK_ANSWER;
             choiceContainer.setVisibility(View.GONE);
             showAnswer.setVisibility(View.VISIBLE);
         }
@@ -98,10 +92,89 @@ public class QuestionActivity extends Activity {
         if (sMediaPlayer == null) sMediaPlayer = MediaPlayer.create(this, R.raw.out_of_time);
     }
 
+    private void startSpeechRecognizer() {
+        mSpeechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
+        mSpeechRecognizer.setRecognitionListener(new RecognitionListener() {
+            @Override
+            public void onReadyForSpeech(Bundle params) {
+                Log.i(TAG, "onReadyForSpeech");
+            }
+
+            @Override
+            public void onBeginningOfSpeech() {
+                Log.i(TAG, "onBeginningOfSpeech");
+
+            }
+
+            @Override
+            public void onRmsChanged(float rmsdB) {
+            }
+
+            @Override
+            public void onBufferReceived(byte[] buffer) {
+
+            }
+
+            @Override
+            public void onEndOfSpeech() {
+                Log.i(TAG, "onEndOfSpeech ");
+
+            }
+
+            @Override
+            public void onError(int error) {
+                Log.i(TAG, "Error: " + error);
+
+            }
+
+            @Override
+            public void onResults(Bundle results) {
+                StringBuilder builder = new StringBuilder();
+
+                List<String> recognitionResults = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+
+                for (String result : recognitionResults) {
+                    builder.append(result);
+                    builder.append(", ");
+                }
+                Log.i(TAG, "Got results: " + builder.toString());
+
+                handleSpokenAnswer(recognitionResults.size() == 0 ? "?" : recognitionResults.get(0), question.getAnswer());
+            }
+
+            @Override
+            public void onPartialResults(Bundle partialResults) {
+
+            }
+
+            @Override
+            public void onEvent(int eventType, Bundle params) {
+
+            }
+        });
+
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,"voice.recognition.test");
+
+        mSpeechRecognizer.startListening(intent);
+    }
+
+    private void stopSpeechRecognizer() {
+        if (mSpeechRecognizer == null) return;
+
+        mSpeechRecognizer.stopListening();
+        mSpeechRecognizer.destroy();
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (sMediaPlayer == null) sMediaPlayer.release();
+        if (sMediaPlayer != null) {
+            sMediaPlayer.release();
+            sMediaPlayer = null;
+        }
+        stopSpeechRecognizer();
     }
 
     private void startTimer() {
@@ -115,10 +188,9 @@ public class QuestionActivity extends Activity {
             }
 
             public void onFinish() {
-                if (state == State.WILL_SELECT_ANSWER || state == State.WILL_SHOW_ANSWER) {
-                    sMediaPlayer.start();
-                    //finishWithQuestionResult(false);
-                    promptView.setText(question.choices.get(0));
+                if (state == State.WILL_SELECT_ANSWER || state == State.WILL_SPEAK_ANSWER) {
+                    if (sMediaPlayer != null) sMediaPlayer.start();
+                    promptView.setText(question.getAnswer());
                     state = State.OUT_OF_TIME;
                     choiceContainer.setVisibility(View.GONE);
                     showAnswer.setVisibility(View.VISIBLE);
@@ -136,24 +208,48 @@ public class QuestionActivity extends Activity {
         return false;
     }
 
-    @OnClick(R.id.showAnswer)
-    public void onShowAnswerClicked(View showAnswer) {
+    @OnClick(R.id.speakAnswer)
+    public void onSpeakAnswerClicked(View showAnswer) {
         if (state == State.OUT_OF_TIME) {
             finishWithQuestionResult(false);
             return;
         }
+
         timerBar.setVisibility(View.INVISIBLE);
-        promptView.setText(question.choices.get(0));
-        choiceContainer.setVisibility(View.VISIBLE);
-        showAnswer.setVisibility(View.GONE);
-        choiceViews.get(0).setVisibility(View.INVISIBLE);
-        choiceViews.get(1).setText("I got it");
-        choiceViews.get(1).setTag(true);
-        choiceViews.get(2).setText("I didn't");
-        choiceViews.get(2).setTag(false);
-        choiceViews.get(2).requestFocus();
-        choiceViews.get(3).setVisibility(View.INVISIBLE);
-        state = State.SHOWING_ANSWER;
+        state = State.SPEAKING_ANSWER;
+        startSpeechRecognizer();
+    }
+
+    private void handleSpokenAnswer(String spokenAnswer, String correctAnswer) {
+        // Remove all case, whitespace and non-visible characters
+        String reducedCorrectAnswer = correctAnswer.toLowerCase().replaceAll("\\s+","");
+        String reducedSpokenAnswer = spokenAnswer.toLowerCase().replaceAll("\\s+","");
+
+        LevenshteinDistanceService distanceService = new LevenshteinDistanceService();
+        int distance = distanceService.computeDistance(reducedSpokenAnswer, reducedCorrectAnswer);
+        int maxDistance = Math.max(reducedSpokenAnswer.length(), reducedCorrectAnswer.length());
+
+        float match = (maxDistance - distance) / maxDistance;
+
+        Log.i(TAG, String.format("distance: '%s' - '%s' is %d", reducedSpokenAnswer, reducedCorrectAnswer, distance));
+        Log.i(TAG, String.format("Match: '%s' - '%s' is %f", spokenAnswer, correctAnswer, match));
+
+        if (match > .7) {
+            finishWithQuestionResult(true);
+        } else {
+            promptView.setText(String.format("Answered: %s \n Correct Answer: %s", spokenAnswer, correctAnswer));
+
+            choiceContainer.setVisibility(View.VISIBLE);
+            showAnswer.setVisibility(View.GONE);
+            choiceViews.get(0).setVisibility(View.INVISIBLE);
+            choiceViews.get(1).setText("I got it");
+            choiceViews.get(1).setTag(true);
+            choiceViews.get(2).setText("I didn't");
+            choiceViews.get(2).setTag(false);
+            choiceViews.get(2).requestFocus();
+            choiceViews.get(3).setVisibility(View.INVISIBLE);
+            state = State.SHOWING_ANSWER;
+        }
     }
 
     @OnClick({R.id.choice1, R.id.choice2, R.id.choice3, R.id.choice4})
@@ -165,13 +261,7 @@ public class QuestionActivity extends Activity {
             case WILL_SELECT_ANSWER:
                 timerBar.setVisibility(View.INVISIBLE);
                 int selection = (int) selectedAnswerView.getTag();
-                if (selection == question.correctChoice) {
-                    Toast.makeText(this, "CORRECT", Toast.LENGTH_SHORT).show();
-                    finishWithQuestionResult(true);
-                } else {
-                    Toast.makeText(this, "WRONG", Toast.LENGTH_SHORT).show();
-                    finishWithQuestionResult(false);
-                }
+                finishWithQuestionResult(selection == question.correctChoice);
                 break;
             case SHOWING_ANSWER:
                 boolean answeredCorrectly = (boolean) selectedAnswerView.getTag();
@@ -181,6 +271,7 @@ public class QuestionActivity extends Activity {
     }
 
     private void finishWithQuestionResult(boolean correctAnswer) {
+        Toast.makeText(this, correctAnswer ? "CORRECT" : "WRONG", Toast.LENGTH_SHORT).show();
         Intent result = new Intent(INTENT_ACTION);
         setResult((correctAnswer ? ANSWERED_CORRECT : ANSWERED_INCORRECT), result);
         finish();

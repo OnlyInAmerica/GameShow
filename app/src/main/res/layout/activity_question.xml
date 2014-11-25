@@ -31,7 +31,7 @@
          android:textSize="50sp" />
 
      <Button
-         android:id="@+id/showAnswer"
+         android:id="@+id/speakAnswer"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
          android:layout_alignParentBottom="true"
@@ -40,7 +40,7 @@
          android:background="@drawable/choice_bg"
          android:focusable="true"
          android:padding="16dp"
-         android:text="@string/show_answer"
+         android:text="@string/answer"
          android:textSize="20sp"
          android:visibility="gone" />
 
