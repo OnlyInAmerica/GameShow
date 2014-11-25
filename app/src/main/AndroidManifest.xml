@@ -11,6 +11,7 @@
     <uses-feature
         android:name="android.software.leanback"
         android:required="true" />
+    <uses-feature android:name="android.hardware.gamepad" android:required="false"/>
     <!-- I want microphone to be required. Android TV docs say microphone
          isn't available on Android TV. -->
     <uses-feature
