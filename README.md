@@ -16,7 +16,7 @@ Make sure you've installed the following items from the Android SDK Manager:
 + Android Support Repository Rev. 9
 
 ```
-$ git clone https://github.com/OnlyInAmerica/GamesShow.git
+$ git clone https://github.com/OnlyInAmerica/GameShow.git
 $ cd GameShow
 $ ./gradlew assembleDebug
 $ adb install -r ./app/build/outputs/apk/app-debug.apk
