@@ -40,7 +40,7 @@
          android:background="@drawable/choice_bg"
          android:focusable="true"
          android:padding="16dp"
-         android:text="@string/answer"
+         android:text="@string/speak_answer"
          android:textSize="20sp"
          android:visibility="gone" />
 

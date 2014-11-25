@@ -230,6 +230,7 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
 
         if (resId != 0) {
             mMediaPlayer = MediaPlayer.create(this, resId);
+            mMediaPlayer.setVolume(.7f, .7f);
             mMediaPlayer.start();
         }
     }

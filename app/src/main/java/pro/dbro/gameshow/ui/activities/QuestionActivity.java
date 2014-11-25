@@ -17,7 +17,6 @@ import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.apache.airavata.samples.LevenshteinDistanceService;
 
@@ -71,9 +70,6 @@ public class QuestionActivity extends Activity {
         setContentView(R.layout.activity_question);
         ButterKnife.inject(this);
 
-        // Workaround for ButterKnife @InjectViews order
-//        choiceViews = new ArrayList<Button>() {{ add(choice1); add(choice2); add(choice3); add(choice4); }};
-
         question = (Question) getIntent().getExtras().getSerializable("question");
         final Typeface promptTypeface = Typeface.createFromAsset(getAssets(), "fonts/Korinna_Bold.ttf");
         promptView.setTypeface(promptTypeface);
@@ -90,7 +86,10 @@ public class QuestionActivity extends Activity {
             speakAnswer.setVisibility(View.VISIBLE);
         }
         startTimer();
-        if (sMediaPlayer == null) sMediaPlayer = MediaPlayer.create(this, R.raw.out_of_time);
+        if (sMediaPlayer == null) {
+            sMediaPlayer = MediaPlayer.create(this, R.raw.out_of_time);
+            sMediaPlayer.setVolume(.7f, .7f);
+        }
     }
 
     private void startSpeechRecognizer() {
@@ -197,10 +196,22 @@ public class QuestionActivity extends Activity {
         startSpeechRecognizer();
     }
 
+    private static final String[] IGNORED_REDUCED_PREFIXES = new String[] {"whatis", "what's", "whois", "who's"};
+
     private void handleSpokenAnswer(String spokenAnswer, String correctAnswer) {
         // Remove all case, whitespace, and non alphabetical characters
-        String reducedCorrectAnswer = correctAnswer.toLowerCase().replaceAll("\\s+", "").replaceAll("[^a-zA-Z ]", "");
-        String reducedSpokenAnswer = spokenAnswer.toLowerCase().replaceAll("\\s+", "").replaceAll("[^a-zA-Z ]", "");
+        String reducedCorrectAnswer = correctAnswer.toLowerCase()
+                                                   .replaceAll("\\s+", "")
+                                                   .replaceAll("[^a-zA-Z ]", "");
+
+        String reducedSpokenAnswer = spokenAnswer.toLowerCase()
+                                                 .replaceAll("\\s+", "")
+                                                 .replaceAll("[^a-zA-Z ]", "");
+
+        for (String prefix : IGNORED_REDUCED_PREFIXES) {
+            if (reducedSpokenAnswer.startsWith(prefix))
+                reducedSpokenAnswer = reducedSpokenAnswer.replaceFirst(prefix, "");
+        }
 
         LevenshteinDistanceService distanceService = new LevenshteinDistanceService();
         int distance = distanceService.computeDistance(reducedSpokenAnswer, reducedCorrectAnswer);
@@ -215,7 +226,12 @@ public class QuestionActivity extends Activity {
         if (match > .7) {
             finishWithQuestionResult(true);
         } else {
-            promptView.setText(String.format("Heard: %s \nAnswer: %s", spokenAnswer, correctAnswer));
+            promptView.setText(String.format("Heard: %s \nAnswer: %s",
+                                             spokenAnswer.replace("what is", "")
+                                                         .replace("what's", "")
+                                                         .replace("who is", "")
+                                                         .replace("who's", ""),
+                                             correctAnswer));
 
             choiceContainer.setVisibility(View.VISIBLE);
             speakAnswer.setVisibility(View.GONE);

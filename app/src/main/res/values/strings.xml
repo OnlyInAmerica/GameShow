@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="answer">Answer</string>
-    <string name="listening">Listening...</string>
+    <string name="speak_answer">Speak Answer</string>
+    <string name="listening">Listening…</string>
 </resources>
