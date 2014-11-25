@@ -127,9 +127,12 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check which request we're responding to
         if (requestCode == ANSWER_QUESTION) {
+            boolean wasCorrect = resultCode == QuestionActivity.ANSWERED_CORRECT;
+
+            playSound(wasCorrect ? SoundType.SUCCESS : SoundType.FAILURE);
 
             ((QuestionAnsweredListener) getFragmentManager().findFragmentByTag("gameFrag"))
-                    .onQuestionAnswered(mLastQuestionView, resultCode == QuestionActivity.ANSWERED_CORRECT);
+                    .onQuestionAnswered(mLastQuestionView, wasCorrect);
         }
     }
 
@@ -154,7 +157,15 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mMusicHandler != null) mMusicHandler.release();
+        if (mMusicHandler != null) {
+            mMusicHandler.release();
+            mMusicHandler = null;
+        }
+
+        if (mMediaPlayer != null) {
+            mMediaPlayer.release();
+            mMediaPlayer = null;
+        }
     }
 
     @Override
@@ -203,5 +214,26 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
             }
         });
         builder.show();
+    }
+
+    private enum SoundType { SUCCESS, FAILURE}
+
+    private void playSound(SoundType type) {
+        if (mMediaPlayer != null) mMediaPlayer.release();
+
+        int resId = 0;
+
+        switch (type) {
+            case SUCCESS:
+                resId = R.raw.correct;
+                break;
+            case FAILURE:
+                break;
+        }
+
+        if (resId != 0) {
+            mMediaPlayer = MediaPlayer.create(this, resId);
+            mMediaPlayer.start();
+        }
     }
 }

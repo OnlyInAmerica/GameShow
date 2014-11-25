@@ -1,6 +1,7 @@
 package pro.dbro.gameshow;
 
 import android.content.Context;
+import android.text.Html;
 import android.util.Log;
 
 import com.google.gson.JsonArray;
@@ -70,7 +71,7 @@ public class JeopardyClient {
                                 question.value = 400;
                             }
                             question.choices = new ArrayList<>();
-                            question.choices.add(questionJson.get("answer").getAsString());
+                            question.choices.add(Html.fromHtml(questionJson.get("answer").getAsString()).toString());
                             question.correctChoice = 0;
                             category.addQuestion(question);
 
