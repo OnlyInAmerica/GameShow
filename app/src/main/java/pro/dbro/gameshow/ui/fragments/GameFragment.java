@@ -163,7 +163,8 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
         questionsAnswered++;
 
         questionTile.setFocusable(false);
-        questionTile.setVisibility(View.INVISIBLE);
+        questionTile.findViewById(R.id.value).setVisibility(View.INVISIBLE);
+        questionTile.findViewById(R.id.dollarSign).setVisibility(View.INVISIBLE);
 
         if (answeredCorrectly) {
             Question question = (Question) questionTile.getTag();

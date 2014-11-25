@@ -104,16 +104,13 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ( (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_A) &&
                 getCurrentFocus() != null) {
-//            ((ViewClickHandler) getFragmentManager().findFragmentByTag("gameFrag")).onViewClicked(getCurrentFocus());
+
             getCurrentFocus().setTransitionName("sharedValue");
             Intent intent = new Intent(this, QuestionActivity.class);
             intent.putExtra("value", ((TextView) getCurrentFocus().findViewById(R.id.value)).getText());
             intent.putExtra("question", (Question) getCurrentFocus().getTag());
-            // create the transition animation - the images in the layouts
-            // of both activities are defined with android:transitionName="robot"
             ActivityOptions options = ActivityOptions
                     .makeSceneTransitionAnimation(this, getCurrentFocus(), "sharedValue");
-            // start the new activity
             mLastQuestionView = (ViewGroup) getCurrentFocus();
             startActivityForResult(intent, ANSWER_QUESTION, options.toBundle());
             return true;
