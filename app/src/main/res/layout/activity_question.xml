@@ -22,16 +22,17 @@
          android:id="@+id/prompt"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:layout_centerInParent="true"
          android:shadowColor="@android:color/black"
          android:shadowDx="8"
          android:shadowDy="8"
          android:shadowRadius="8"
+         android:layout_above="@+id/speakAnswer"
+         android:layout_below="@id/timerBar"
          android:gravity="center"
          android:textSize="50sp" />
 
      <Button
-         android:id="@+id/speakAnswer"
+         android:id="@id/speakAnswer"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
          android:layout_alignParentBottom="true"
