@@ -3,6 +3,7 @@
 [![Screenshot](http://i.imgur.com/rU8QmaK.png)](http://i.imgur.com/rU8QmaK.png)
 [![Screenshot](http://i.imgur.com/e4aJZZh.jpg)](http://i.imgur.com/e4aJZZh.jpg)
 
+[![GameShow](http://img3.wikia.nocookie.net/__cb20131203174704/logopedia/images/d/dc/Get_it_on_Google_Play_badge.svg)](https://play.google.com/store/apps/details?id=pro.dbro.gameshow)
 
 A game show for AndroidTV inspired by Alex Trebek using the wonderful [jservice.io](http://jservice.io/) Jeopardy question API.
 Also supports custom questions bundled via JSON. See `./app/src/main/assets/games/default.json`.
