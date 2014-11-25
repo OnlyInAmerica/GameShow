@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:padding="18dp"
     android:background="@android:color/black"
-    tools:context="pro.dbro.gameshow.GameFragment">
+    tools:context="pro.dbro.gameshow.ui.fragments.GameFragment">
 
     <TextView
         android:id="@+id/header"

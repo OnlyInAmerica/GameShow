@@ -1,4 +1,4 @@
-package pro.dbro.gameshow;
+package pro.dbro.gameshow.ui;
 
 import android.view.ViewGroup;
 

@@ -1,4 +1,4 @@
-package pro.dbro.gameshow;
+package pro.dbro.gameshow.ui.fragments;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -15,16 +15,17 @@ import android.widget.RadioGroup;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import pro.dbro.gameshow.R;
 import pro.dbro.gameshow.model.Category;
 import pro.dbro.gameshow.model.Game;
 import pro.dbro.gameshow.model.Player;
 import pro.dbro.gameshow.model.Question;
+import pro.dbro.gameshow.ui.QuestionAnsweredListener;
 
 
 public class GameFragment extends Fragment implements QuestionAnsweredListener {

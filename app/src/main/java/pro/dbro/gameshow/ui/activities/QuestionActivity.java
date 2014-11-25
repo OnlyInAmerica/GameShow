@@ -1,4 +1,4 @@
-package pro.dbro.gameshow;
+package pro.dbro.gameshow.ui.activities;
 
 import android.animation.ObjectAnimator;
 import android.app.Activity;
@@ -28,6 +28,7 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.InjectViews;
 import butterknife.OnClick;
+import pro.dbro.gameshow.R;
 import pro.dbro.gameshow.model.Question;
 
 

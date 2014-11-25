@@ -1,4 +1,4 @@
-package pro.dbro.gameshow;
+package pro.dbro.gameshow.ui.fragments;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -20,6 +20,8 @@ import java.util.List;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import pro.dbro.gameshow.PreferencesManager;
+import pro.dbro.gameshow.R;
 import pro.dbro.gameshow.model.Player;
 
 public class ChoosePlayerFragment extends Fragment {

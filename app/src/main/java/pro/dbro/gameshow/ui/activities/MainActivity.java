@@ -12,7 +12,7 @@
  * the License.
  */
 
-package pro.dbro.gameshow;
+package pro.dbro.gameshow.ui.activities;
 
 import android.app.Activity;
 import android.app.ActivityOptions;
@@ -28,9 +28,15 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import pro.dbro.gameshow.JeopardyClient;
+import pro.dbro.gameshow.MusicHandler;
+import pro.dbro.gameshow.R;
 import pro.dbro.gameshow.model.Game;
 import pro.dbro.gameshow.model.Player;
 import pro.dbro.gameshow.model.Question;
+import pro.dbro.gameshow.ui.fragments.ChoosePlayerFragment;
+import pro.dbro.gameshow.ui.fragments.GameFragment;
+import pro.dbro.gameshow.ui.QuestionAnsweredListener;
 
 /*
  * MainActivity class that loads MainFragment
