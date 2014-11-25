@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.apache.airavata.samples.LevenshteinDistanceService;
@@ -234,6 +235,10 @@ public class QuestionActivity extends Activity {
             }
 
             promptView.setText(String.format("Heard: %s \nAnswer: %s", spokenAnswerObject, correctAnswer));
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) promptView.getLayoutParams();
+            params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+            params.addRule(RelativeLayout.ABOVE, R.id.choiceContainer);
+            promptView.setLayoutParams(params);
 
             choiceContainer.setVisibility(View.VISIBLE);
             speakAnswer.setVisibility(View.GONE);
