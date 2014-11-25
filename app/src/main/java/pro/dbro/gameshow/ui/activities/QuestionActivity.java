@@ -196,7 +196,8 @@ public class QuestionActivity extends Activity {
         startSpeechRecognizer();
     }
 
-    private static final String[] IGNORED_REDUCED_PREFIXES = new String[] {"whatis", "what's", "whois", "who's"};
+    private static final String[] IGNORED_PREFIXES
+            = new String[] {"what is", "what's", "what are", "what're", "who is", "who's", "who are", "who're" };
 
     private void handleSpokenAnswer(String spokenAnswer, String correctAnswer) {
         // Remove all case, whitespace, and non alphabetical characters
@@ -208,9 +209,9 @@ public class QuestionActivity extends Activity {
                                                  .replaceAll("\\s+", "")
                                                  .replaceAll("[^a-zA-Z ]", "");
 
-        for (String prefix : IGNORED_REDUCED_PREFIXES) {
-            if (reducedSpokenAnswer.startsWith(prefix))
-                reducedSpokenAnswer = reducedSpokenAnswer.replaceFirst(prefix, "");
+        for (String prefix : IGNORED_PREFIXES) {
+            if (reducedSpokenAnswer.startsWith(prefix.replace(" ", "")))
+                reducedSpokenAnswer = reducedSpokenAnswer.replaceFirst(prefix.replace(" ", ""), "");
         }
 
         LevenshteinDistanceService distanceService = new LevenshteinDistanceService();
@@ -226,12 +227,13 @@ public class QuestionActivity extends Activity {
         if (match > .7) {
             finishWithQuestionResult(true);
         } else {
-            promptView.setText(String.format("Heard: %s \nAnswer: %s",
-                                             spokenAnswer.replace("what is", "")
-                                                         .replace("what's", "")
-                                                         .replace("who is", "")
-                                                         .replace("who's", ""),
-                                             correctAnswer));
+            String spokenAnswerObject = spokenAnswer;
+            for (String prefix : IGNORED_PREFIXES) {
+                if (spokenAnswerObject.startsWith(prefix))
+                    spokenAnswerObject = spokenAnswerObject.replaceFirst(prefix, "");
+            }
+
+            promptView.setText(String.format("Heard: %s \nAnswer: %s", spokenAnswerObject, correctAnswer));
 
             choiceContainer.setVisibility(View.VISIBLE);
             speakAnswer.setVisibility(View.GONE);
