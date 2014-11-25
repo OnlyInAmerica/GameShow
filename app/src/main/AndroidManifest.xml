@@ -11,6 +11,14 @@
     <uses-feature
         android:name="android.software.leanback"
         android:required="true" />
+    <uses-feature
+        android:name="android.hardware.gamepad"
+        android:required="true"/>
+    <!-- I want microphone to be required. Android TV docs say microphone
+         isn't available on Android TV. -->
+    <uses-feature
+        android:name="android.hardware.microphone"
+        android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -22,7 +30,8 @@
         <activity
             android:name=".ui.activities.MainActivity"
             android:label="@string/app_name"
-            android:screenOrientation="landscape" >
+            android:screenOrientation="landscape"
+            android:configChanges="keyboard|keyboardHidden|navigation">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -30,7 +39,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.activities.QuestionActivity" >
+            android:name=".ui.activities.QuestionActivity"
+            android:configChanges="keyboard|keyboardHidden|navigation">
         </activity>
     </application>
 

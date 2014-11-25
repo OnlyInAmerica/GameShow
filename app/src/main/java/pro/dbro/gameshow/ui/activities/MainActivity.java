@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -61,6 +62,7 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
 //        try {
 //            AssetManager assetManager = getAssets();
@@ -114,7 +116,7 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
             mLastQuestionView = (ViewGroup) getCurrentFocus();
             startActivityForResult(intent, ANSWER_QUESTION, options.toBundle());
             return true;
-        } else if (keyCode == KeyEvent.KEYCODE_BACK) {
+        } else if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_B) {
             finish();
         }
         return false;
