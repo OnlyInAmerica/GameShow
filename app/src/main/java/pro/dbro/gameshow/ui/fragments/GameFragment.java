@@ -125,6 +125,7 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
                         questionTile.setTag(game.categories.get(y).questions.get(x - 1));
                     } else {
                         questionTile.setFocusable(false);
+                        questionTile.findViewById(R.id.dollarSign).setVisibility(View.INVISIBLE);
                     }
                     ((TextView) questionTile.findViewById(R.id.value)).setTypeface(tileFont);
                     questionTile.setLayoutParams(params);

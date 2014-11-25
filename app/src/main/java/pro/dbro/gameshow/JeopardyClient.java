@@ -61,8 +61,12 @@ public class JeopardyClient {
 
                         Log.i(TAG, String.format("Got %d questions for category %s", questions.size(), category.title));
 
-                        for (int x = 0; x < Math.min(Category.REQUIRED_QUESTIONS, questions.size()); x++) {
+                        for (int x = 0; x < questions.size() && category.questions.size() < Category.REQUIRED_QUESTIONS; x++ ) {
+
                             JsonObject questionJson = questions.get(x).getAsJsonObject();
+
+                            if (questionJson.get("question").getAsString().replace(" ","").length() == 0) continue;
+
                             Question question = new Question();
                             question.prompt = questionJson.get("question").getAsString();
                             if (!questionJson.get("value").isJsonNull()) {

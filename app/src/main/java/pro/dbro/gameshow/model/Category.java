@@ -13,10 +13,9 @@ public class Category {
     public String title;
     public int jServiceId;
 
-    public List<Question> questions;
+    public List<Question> questions = new ArrayList<>();
 
     public void addQuestion(Question question) {
-        if (questions == null) questions = new ArrayList<>();
         questions.add(question);
     }
 }
