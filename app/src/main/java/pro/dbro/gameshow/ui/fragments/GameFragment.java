@@ -44,7 +44,7 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
 
     public static GameFragment newInstance(Game game) {
         GameFragment fragment = new GameFragment(game);
-        Log.i("GameFragment", String.format("Creating GameFragment for game with %d players", game.players.size()));
+        Log.d("GameFragment", String.format("Creating GameFragment for game with %d players", game.players.size()));
         return fragment;
     }
 
@@ -79,7 +79,7 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
         final int NUM_COLS = game.categories.size();
         final int NUM_ROWS = Category.REQUIRED_QUESTIONS + 1; // +1 for header
 
-        Log.i(TAG, "onCreateView with num players: " + game.players.size());
+        Log.d(TAG, "onCreateView with num players: " + game.players.size());
         List<Player> players = game.players;
 
         for (Player player : players) {
@@ -196,7 +196,7 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
 
         advanceCurrentPlayer();
 
-//        Log.i(TAG, String.format("Answered %d/%d questions", questionsAnswered, game.countQuestions()));
+//        Log.d(TAG, String.format("Answered %d/%d questions", questionsAnswered, game.countQuestions()));
         if (questionsAnswered == game.countQuestions()) {
             mListener.onGameComplete(game.getWinners());
         }

@@ -77,7 +77,7 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
         createGame();
         showChoosePlayerFragment();
         mSoundFxHandler = SoundEffectHandler.getInstance(this);
-        Log.i(TAG, "onCreate");
+        Log.d(TAG, "onCreate");
     }
 
     private void createGame() {

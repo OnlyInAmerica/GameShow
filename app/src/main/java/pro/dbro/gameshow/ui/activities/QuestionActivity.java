@@ -98,7 +98,7 @@ public class QuestionActivity extends Activity {
 
             @Override
             public void onBeginningOfSpeech() {
-                Log.i(TAG, "onBeginningOfSpeech");
+                Log.d(TAG, "onBeginningOfSpeech");
             }
 
             @Override
@@ -115,7 +115,7 @@ public class QuestionActivity extends Activity {
                     builder.append(result);
                     builder.append(", ");
                 }
-                Log.i(TAG, "Got results: " + builder.toString());
+                Log.d(TAG, "Got results: " + builder.toString());
 
                 handleSpokenAnswer(recognitionResults.size() == 0 ? "?" : recognitionResults.get(0), question.getAnswer());
             }
@@ -241,10 +241,10 @@ public class QuestionActivity extends Activity {
         int maxDistance = Math.max(reducedSpokenAnswer.length(), reducedCorrectAnswer.length());
 
         float match = (maxDistance - distance) / (float) maxDistance;
-        Log.i(TAG, String.format("(%d - %d) / %d = %f", maxDistance, distance, maxDistance, match));
+        Log.d(TAG, String.format("(%d - %d) / %d = %f", maxDistance, distance, maxDistance, match));
 
-        Log.i(TAG, String.format("distance: '%s' - '%s' is %d", reducedSpokenAnswer, reducedCorrectAnswer, distance));
-        Log.i(TAG, String.format("Match: '%s' - '%s' is %f", spokenAnswer, correctAnswer, match));
+        Log.d(TAG, String.format("distance: '%s' - '%s' is %d", reducedSpokenAnswer, reducedCorrectAnswer, distance));
+        Log.d(TAG, String.format("Match: '%s' - '%s' is %f", spokenAnswer, correctAnswer, match));
 
         if (match > .7) {
             finishWithQuestionResult(true);
