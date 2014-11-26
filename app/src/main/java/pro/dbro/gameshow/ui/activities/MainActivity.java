@@ -129,8 +129,7 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
         if (requestCode == REQUEST_CODE_ANSWER_QUESTION) {
             boolean wasCorrect = resultCode == QuestionActivity.ANSWERED_CORRECT;
 
-            mSoundFxHandler.playSound(wasCorrect ?
-                    SoundEffectHandler.SoundType.SUCCESS : SoundEffectHandler.SoundType.FAILURE);
+            if (wasCorrect) mSoundFxHandler.playSound(SoundEffectHandler.SoundType.SUCCESS);
 
             ((QuestionAnsweredListener) getFragmentManager().findFragmentByTag("gameFrag"))
                     .onQuestionAnswered(mLastQuestionView, wasCorrect);

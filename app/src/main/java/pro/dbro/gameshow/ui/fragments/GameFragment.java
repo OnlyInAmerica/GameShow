@@ -85,7 +85,7 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
             playerButton.setTypeface(tileFont);
             playerButton.setButtonDrawable(null);
             playerButton.setTextSize(30);
-            playerButton.setTextColor(getResources().getColor(R.color.blue_title));
+            playerButton.setTextColor(getResources().getColor(R.color.text_player_names));
             playerButton.setPadding(8, 8, 8, 8);
             RadioGroup.LayoutParams params = new RadioGroup.LayoutParams(RadioGroup.LayoutParams.WRAP_CONTENT, RadioGroup.LayoutParams.WRAP_CONTENT);
             params.setMargins(16, 0, 16, 0);

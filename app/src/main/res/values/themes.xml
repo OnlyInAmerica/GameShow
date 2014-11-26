@@ -7,7 +7,7 @@
         <item name="android:windowAllowReturnTransitionOverlap">true</item>
         <item name="android:windowAllowEnterTransitionOverlap">true</item>
         <item name="android:windowContentTransitions">true</item>
-        <item name="android:colorPrimary">@color/blue</item>
+        <item name="android:colorPrimary">@color/board</item>
 
     </style>
 </resources>

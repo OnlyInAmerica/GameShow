@@ -12,7 +12,7 @@
              <solid android:color="@android:color/transparent" />
              <stroke
                  android:width="2dp"
-                 android:color="@color/subdued_highlight" />
+                 android:color="@color/text_subdued" />
          </shape>
      </item>
 

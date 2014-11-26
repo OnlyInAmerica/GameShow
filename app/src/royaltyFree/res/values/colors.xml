@@ -1,7 +1,7 @@
 <resources>
-    <color name="subdued_highlight">#ff8c8c8c</color>
-    <color name="blue_title">#B3E5FC</color>
-    <color name="blue_light">#0277BD</color>
-    <color name="blue">#01579B</color>
-    <color name="gold">#F18A00</color>
+    <color name="text_subdued">#ff8c8c8c</color>
+    <color name="text_player_names">#616161</color>
+    <color name="board_selected">#0390fc</color>
+    <color name="board">#01579b</color>
+    <color name="text_dollar">#f18a00</color>
 </resources>

@@ -18,10 +18,10 @@ public class SoundEffectHandler {
 
     public static enum SoundType {
         SUCCESS     (R.raw.correct),
-        FAILURE     (0),
         OUT_OF_TIME (R.raw.out_of_time);
 
         public final int resId;
+        public int poolId;
 
         private SoundType(final int resId) {
             this.resId = resId;
@@ -46,7 +46,7 @@ public class SoundEffectHandler {
     }
 
     public void playSound(SoundType type) {
-        mPool.play(type.resId, mVolume, mVolume, 1, 0, 1);
+        mPool.play(type.poolId, mVolume, mVolume, 1, 0, 1);
     }
 
     public void release() {
@@ -76,9 +76,9 @@ public class SoundEffectHandler {
         poolBuilder.setAudioAttributes(audioBuilder.build());
         mPool = poolBuilder.build();
 
-        mPool.load(mContext, R.raw.out_of_time, 1);
-        mPool.load(mContext, R.raw.correct, 1);
-
+        for (SoundType type : SoundType.values()) {
+            type.poolId = mPool.load(mContext, type.resId, 1);
+        }
     }
 
     // </editor-fold desc="Private API">

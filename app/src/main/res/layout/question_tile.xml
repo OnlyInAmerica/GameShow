@@ -8,7 +8,7 @@
 
     <TextView
         android:id="@+id/value"
-        android:textColor="@color/gold"
+        android:textColor="@color/text_dollar"
         android:shadowColor="@android:color/black"
         android:shadowDx="8"
         android:shadowDy="8"
@@ -21,7 +21,7 @@
 
     <TextView
         android:id="@+id/dollarSign"
-        android:textColor="@color/gold"
+        android:textColor="@color/text_dollar"
         android:shadowColor="@android:color/black"
         android:shadowDx="8"
         android:shadowDy="8"
