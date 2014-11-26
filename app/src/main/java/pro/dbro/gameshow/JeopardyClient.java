@@ -54,12 +54,12 @@ public class JeopardyClient {
 
                         game.addCategory(category);
 
-                        Log.i(TAG, "Fetching questions for category " + category.title);
+                        //Log.i(TAG, "Fetching questions for category " + category.title);
                         JsonArray questions = Ion.with(mContext)
                                 .load(String.format("http://jservice.io/api/clues?category=%d&count=%d", category.jServiceId, Category.REQUIRED_QUESTIONS))
                                 .asJsonArray().get();
 
-                        Log.i(TAG, String.format("Got %d questions for category %s", questions.size(), category.title));
+                        //Log.i(TAG, String.format("Got %d questions for category %s", questions.size(), category.title));
 
                         for (int x = 0; x < questions.size() && category.questions.size() < Category.REQUIRED_QUESTIONS; x++ ) {
 
@@ -79,8 +79,8 @@ public class JeopardyClient {
                             question.correctChoice = 0;
                             category.addQuestion(question);
 
-                            Log.i(TAG, String.format("Added %d/%d questions", ++totalQuestionsAdded,
-                                    Category.REQUIRED_QUESTIONS * Game.REQUIRED_CATEGORIES));
+                            //Log.i(TAG, String.format("Added %d/%d questions", ++totalQuestionsAdded,
+                            //        Category.REQUIRED_QUESTIONS * Game.REQUIRED_CATEGORIES));
                         }
                     }
 
