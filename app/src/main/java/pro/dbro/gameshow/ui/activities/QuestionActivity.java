@@ -40,6 +40,7 @@ public class QuestionActivity extends Activity {
     public static int ANSWERED_INCORRECT = 0;
 
     private static int QUESTION_ANSWER_TIME_MS = 15 * 1000;
+    private static int SPEECH_RECOGNITION_TIMEOUT_MS = 20 * 1000;
 
     private static enum State {WILL_SPEAK_ANSWER, SPEAKING_ANSWER, WILL_SELECT_ANSWER, SHOWING_ANSWER, OUT_OF_TIME}
 
@@ -123,6 +124,11 @@ public class QuestionActivity extends Activity {
                 Log.w(TAG, "Speech recognition error: " + error);
                 handleSpokenAnswer("?", question.getAnswer());
             }
+
+            @Override
+            public void onEvent(int eventType, Bundle params) {
+                Log.w(TAG, "onEvent: " + eventType);
+            }
         });
 
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
@@ -187,16 +193,30 @@ public class QuestionActivity extends Activity {
         }
         if (state == State.SPEAKING_ANSWER) return;
 
+        mCountdownTimer.cancel();
         timerBar.setVisibility(View.INVISIBLE);
         state = State.SPEAKING_ANSWER;
         speakAnswer.setText(getString(R.string.listening));
         startSpeechRecognizer();
+
+        mCountdownTimer = new CountDownTimer(SPEECH_RECOGNITION_TIMEOUT_MS, SPEECH_RECOGNITION_TIMEOUT_MS) {
+            @Override
+            public void onTick(long millisUntilFinished) {}
+
+            @Override
+            public void onFinish() {
+                if (state == State.SPEAKING_ANSWER) handleSpokenAnswer("?", question.getAnswer());
+            }
+        }.start();
     }
 
     private static final String[] IGNORED_PREFIXES
             = new String[] {"what is", "what's", "what are", "what're", "who is", "who's", "who are", "who're" };
 
     private void handleSpokenAnswer(String spokenAnswer, String correctAnswer) {
+        state = State.SHOWING_ANSWER;
+        mCountdownTimer.cancel();
+
         // Remove all case, whitespace, and non alphabetical characters
         String reducedCorrectAnswer = correctAnswer.toLowerCase()
                                                    .replaceAll("\\s+", "")
@@ -245,7 +265,6 @@ public class QuestionActivity extends Activity {
             choiceViews.get(2).setTag(false);
             choiceViews.get(2).requestFocus();
             choiceViews.get(3).setVisibility(View.INVISIBLE);
-            state = State.SHOWING_ANSWER;
         }
     }
 
