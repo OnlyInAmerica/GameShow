@@ -1,5 +1,6 @@
 package pro.dbro.gameshow.ui.fragments;
 
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
@@ -21,6 +22,7 @@ import java.util.List;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import pro.dbro.gameshow.R;
+import pro.dbro.gameshow.SoundEffectHandler;
 import pro.dbro.gameshow.model.Category;
 import pro.dbro.gameshow.model.Game;
 import pro.dbro.gameshow.model.Player;
@@ -34,6 +36,7 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
     private Game game;
     private Player currentPlayer;
     private int questionsAnswered;
+    private SoundEffectHandler mSoundFxHandler;
 
     @InjectView(R.id.playerGroup) RadioGroup playerGroup;
 
@@ -59,6 +62,8 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        mSoundFxHandler = SoundEffectHandler.getInstance(getActivity());
+        mSoundFxHandler.playSound(SoundEffectHandler.SoundType.FILL_BOARD);
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_main, container, false);
         ButterKnife.inject(this, root);
@@ -116,6 +121,13 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
                     categoryTile.setLayoutParams(params);
                     categoryTile.setTypeface(tileFont);
                     row.addView(categoryTile);
+
+                    categoryTile.setAlpha(0f);
+                    ObjectAnimator anim = ObjectAnimator.ofFloat(categoryTile, "alpha", 0f, 1f);
+                    anim.setDuration(300);
+                    anim.setStartDelay((long) (3000 * Math.random()));
+                    anim.start();
+
                 } else {
                     ViewGroup questionTile = (ViewGroup) inflater.inflate(R.layout.question_tile, row, false);
                     ((TextView) questionTile.findViewById(R.id.dollarSign)).setTypeface(tileFont);
@@ -123,6 +135,12 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
                         ((TextView) questionTile.findViewById(R.id.value)).setText(String.format("%d",
                                 game.categories.get(y).questions.get(x - 1).value));
                         questionTile.setTag(game.categories.get(y).questions.get(x - 1));
+
+                        questionTile.setAlpha(0f);
+                        ObjectAnimator anim = ObjectAnimator.ofFloat(questionTile, "alpha", 0f, 1f);
+                        anim.setDuration(300);
+                        anim.setStartDelay((long) (3000 * Math.random()));
+                        anim.start();
                     } else {
                         questionTile.setFocusable(false);
                         questionTile.findViewById(R.id.dollarSign).setVisibility(View.INVISIBLE);
@@ -140,6 +158,10 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
     public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.reset(this);
+        if (mSoundFxHandler != null) {
+            mSoundFxHandler.release();
+            mSoundFxHandler = null;
+        }
     }
 
     @Override
