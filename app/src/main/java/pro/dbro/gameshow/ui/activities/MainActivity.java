@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -49,7 +50,8 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
 
     private ViewGroup mLastQuestionView;
 
-    private Game mGame;
+    /** Public for testing */
+    public Game mGame;
     private boolean mGameReady = false;
     private boolean mAddedPlayers = false;
 
@@ -108,19 +110,24 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
         if ( (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_A) &&
                 getCurrentFocus() != null) {
 
-            getCurrentFocus().setTransitionName("sharedValue");
-            Intent intent = new Intent(this, QuestionActivity.class);
-            intent.putExtra("value", ((TextView) getCurrentFocus().findViewById(R.id.value)).getText());
-            intent.putExtra("question", (Question) getCurrentFocus().getTag());
-            ActivityOptions options = ActivityOptions
-                    .makeSceneTransitionAnimation(this, getCurrentFocus(), "sharedValue");
-            mLastQuestionView = (ViewGroup) getCurrentFocus();
-            startActivityForResult(intent, REQUEST_CODE_ANSWER_QUESTION, options.toBundle());
+            showQuestionActivityForQuestionView((ViewGroup) getCurrentFocus());
             return true;
         } else if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_B) {
             finish();
         }
         return false;
+    }
+
+    /** Public for testing */
+    public void showQuestionActivityForQuestionView(ViewGroup questionTile) {
+        questionTile.setTransitionName("sharedValue");
+        Intent intent = new Intent(this, QuestionActivity.class);
+        intent.putExtra("value", ((TextView) questionTile.findViewById(R.id.value)).getText());
+        intent.putExtra("question", (Question) questionTile.getTag());
+        ActivityOptions options = ActivityOptions
+                .makeSceneTransitionAnimation(this, questionTile, "sharedValue");
+        mLastQuestionView = questionTile;
+        startActivityForResult(intent, REQUEST_CODE_ANSWER_QUESTION, options.toBundle());
     }
 
     @Override

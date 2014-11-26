@@ -124,6 +124,7 @@ public class ChoosePlayerFragment extends Fragment {
     private void addNewPlayerEntryView(ViewGroup container, String name) {
         EditText playerEntry = new EditText(getActivity());
         playerEntry.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        playerEntry.setTag("player-" + container.getChildCount()); // for testing
         playerEntry.setHint(getActivity().getString(R.string.new_player));
         if (name != null) playerEntry.setText(name);
         playerEntry.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_user_white_small, 0, 0, 0);
