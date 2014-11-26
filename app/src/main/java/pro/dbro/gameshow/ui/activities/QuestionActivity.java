@@ -246,8 +246,13 @@ public class QuestionActivity extends Activity {
         } else {
             String spokenAnswerObject = spokenAnswer;
             for (String prefix : IGNORED_PREFIXES) {
-                if (spokenAnswerObject.startsWith(prefix))
+                String prefixWithLeadingCapital = prefix.substring(0, 1).toUpperCase() + prefix.substring(1);
+
+                if (spokenAnswerObject.startsWith(prefix)) {
                     spokenAnswerObject = spokenAnswerObject.replaceFirst(prefix, "");
+                } else if (spokenAnswerObject.startsWith(prefixWithLeadingCapital)) {
+                    spokenAnswerObject = spokenAnswerObject.replaceFirst(prefixWithLeadingCapital, "");
+                }
             }
 
             promptView.setText(String.format("Heard: %s \nAnswer: %s", spokenAnswerObject, correctAnswer));
