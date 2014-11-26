@@ -89,9 +89,10 @@ public class QuestionActivity extends Activity {
         }
         startTimer();
         mSoundFxHandler = SoundEffectHandler.getInstance(this);
+        prepareSpeechRecognizer();
     }
 
-    private void startSpeechRecognizer() {
+    private void prepareSpeechRecognizer() {
         mSpeechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
         mSpeechRecognizer.setRecognitionListener(new RecognitionAdapter() {
 
@@ -131,6 +132,10 @@ public class QuestionActivity extends Activity {
             }
         });
 
+
+    }
+
+    private void startSpeechRecognizer() {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, "voice.recognition.test");
