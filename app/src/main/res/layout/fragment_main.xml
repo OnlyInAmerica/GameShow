@@ -3,6 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="18dp"
+    android:paddingLeft="28dp"
+    android:paddingRight="28dp"
     android:background="@android:color/black"
     tools:context="pro.dbro.gameshow.ui.fragments.GameFragment">
 
