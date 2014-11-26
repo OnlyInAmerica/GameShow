@@ -19,10 +19,8 @@ import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -32,6 +30,7 @@ import java.util.List;
 import pro.dbro.gameshow.JeopardyClient;
 import pro.dbro.gameshow.MusicHandler;
 import pro.dbro.gameshow.R;
+import pro.dbro.gameshow.SoundEffectHandler;
 import pro.dbro.gameshow.model.Game;
 import pro.dbro.gameshow.model.Player;
 import pro.dbro.gameshow.model.Question;
@@ -46,7 +45,7 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
 
     private String TAG = getClass().getSimpleName();
 
-    public static final int ANSWER_QUESTION = 0;
+    public static final int REQUEST_CODE_ANSWER_QUESTION = 0;
 
     private ViewGroup mLastQuestionView;
 
@@ -54,7 +53,7 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
     private boolean mGameReady = false;
     private boolean mAddedPlayers = false;
 
-    MediaPlayer mMediaPlayer;
+    SoundEffectHandler mSoundFxHandler;
     MusicHandler mMusicHandler;
     private final int MUSIC_FADE_DURATION = 4 * 1000;
 
@@ -75,6 +74,8 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
 
         createGame();
         showChoosePlayerFragment();
+        mSoundFxHandler = SoundEffectHandler.getInstance(this);
+        Log.i(TAG, "onCreate");
     }
 
     private void createGame() {
@@ -114,7 +115,7 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
             ActivityOptions options = ActivityOptions
                     .makeSceneTransitionAnimation(this, getCurrentFocus(), "sharedValue");
             mLastQuestionView = (ViewGroup) getCurrentFocus();
-            startActivityForResult(intent, ANSWER_QUESTION, options.toBundle());
+            startActivityForResult(intent, REQUEST_CODE_ANSWER_QUESTION, options.toBundle());
             return true;
         } else if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_B) {
             finish();
@@ -125,10 +126,11 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check which request we're responding to
-        if (requestCode == ANSWER_QUESTION) {
+        if (requestCode == REQUEST_CODE_ANSWER_QUESTION) {
             boolean wasCorrect = resultCode == QuestionActivity.ANSWERED_CORRECT;
 
-            playSound(wasCorrect ? SoundType.SUCCESS : SoundType.FAILURE);
+            mSoundFxHandler.playSound(wasCorrect ?
+                    SoundEffectHandler.SoundType.SUCCESS : SoundEffectHandler.SoundType.FAILURE);
 
             ((QuestionAnsweredListener) getFragmentManager().findFragmentByTag("gameFrag"))
                     .onQuestionAnswered(mLastQuestionView, wasCorrect);
@@ -161,9 +163,9 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
             mMusicHandler = null;
         }
 
-        if (mMediaPlayer != null) {
-            mMediaPlayer.release();
-            mMediaPlayer = null;
+        if (mSoundFxHandler != null) {
+            mSoundFxHandler.release();
+            mSoundFxHandler = null;
         }
     }
 
@@ -213,27 +215,5 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
             }
         });
         builder.show();
-    }
-
-    private enum SoundType { SUCCESS, FAILURE}
-
-    private void playSound(SoundType type) {
-        if (mMediaPlayer != null) mMediaPlayer.release();
-
-        int resId = 0;
-
-        switch (type) {
-            case SUCCESS:
-                resId = R.raw.correct;
-                break;
-            case FAILURE:
-                break;
-        }
-
-        if (resId != 0) {
-            mMediaPlayer = MediaPlayer.create(this, resId);
-            mMediaPlayer.setVolume(.7f, .7f);
-            mMediaPlayer.start();
-        }
     }
 }

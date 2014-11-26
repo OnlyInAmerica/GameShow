@@ -4,7 +4,6 @@ import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.speech.RecognizerIntent;
@@ -29,6 +28,7 @@ import butterknife.InjectViews;
 import butterknife.OnClick;
 import pro.dbro.gameshow.R;
 import pro.dbro.gameshow.RecognitionAdapter;
+import pro.dbro.gameshow.SoundEffectHandler;
 import pro.dbro.gameshow.model.Question;
 
 
@@ -61,7 +61,7 @@ public class QuestionActivity extends Activity {
     @InjectView(R.id.timerBar)
     ProgressBar timerBar;
 
-    private static MediaPlayer sMediaPlayer;
+    private SoundEffectHandler mSoundFxHandler;
     private CountDownTimer mCountdownTimer;
     private SpeechRecognizer mSpeechRecognizer;
 
@@ -87,10 +87,7 @@ public class QuestionActivity extends Activity {
             speakAnswer.setVisibility(View.VISIBLE);
         }
         startTimer();
-        if (sMediaPlayer == null) {
-            sMediaPlayer = MediaPlayer.create(this, R.raw.out_of_time);
-            sMediaPlayer.setVolume(.7f, .7f);
-        }
+        mSoundFxHandler = SoundEffectHandler.getInstance(this);
     }
 
     private void startSpeechRecognizer() {
@@ -145,9 +142,8 @@ public class QuestionActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (sMediaPlayer != null) {
-            sMediaPlayer.release();
-            sMediaPlayer = null;
+        if (mSoundFxHandler != null) {
+            mSoundFxHandler.release();
         }
         stopSpeechRecognizer();
     }
@@ -164,7 +160,7 @@ public class QuestionActivity extends Activity {
 
             public void onFinish() {
                 if (state == State.WILL_SELECT_ANSWER || state == State.WILL_SPEAK_ANSWER) {
-                    if (sMediaPlayer != null) sMediaPlayer.start();
+                    if (mSoundFxHandler != null) mSoundFxHandler.playSound(SoundEffectHandler.SoundType.OUT_OF_TIME);
                     promptView.setText(question.getAnswer());
                     state = State.OUT_OF_TIME;
                     choiceContainer.setVisibility(View.GONE);
