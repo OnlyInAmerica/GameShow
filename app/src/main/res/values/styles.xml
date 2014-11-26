@@ -2,5 +2,13 @@
 <resources>
     <style name="AppTheme" parent="@style/Theme.Leanback">
         <item name="android:windowContentTransitions">true</item>
+
+        <!-- Main theme colors -->
+        <!--   your app branding color for the app bar -->
+        <item name="android:colorPrimary">@color/board_selected</item>
+        <!--   darker variant for the status bar and contextual app bars -->
+        <item name="android:colorPrimaryDark">@color/board</item>
+        <!--   theme UI controls like checkboxes and text fields -->
+        <item name="android:colorAccent">@color/text_dollar</item>
     </style>
 </resources>
