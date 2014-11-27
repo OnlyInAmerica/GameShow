@@ -108,7 +108,7 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ( (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_A) &&
-                getCurrentFocus() != null) {
+                getCurrentFocus() != null && getCurrentFocus() instanceof ViewGroup) {
 
             showQuestionActivityForQuestionView((ViewGroup) getCurrentFocus());
             return true;
@@ -120,14 +120,24 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
 
     /** Public for testing */
     public void showQuestionActivityForQuestionView(ViewGroup questionTile) {
+        Question question = (Question) questionTile.getTag();
+
         questionTile.setTransitionName("sharedValue");
         Intent intent = new Intent(this, QuestionActivity.class);
-        intent.putExtra("value", ((TextView) questionTile.findViewById(R.id.value)).getText());
-        intent.putExtra("question", (Question) questionTile.getTag());
-        ActivityOptions options = ActivityOptions
-                .makeSceneTransitionAnimation(this, questionTile, "sharedValue");
+        intent.putExtra("question", question);
+        intent.putExtra("player", mGame.getCurrentPlayer());
+
+        if (question.isDailyDouble) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+            startActivityForResult(intent, REQUEST_CODE_ANSWER_QUESTION);
+        } else {
+            ActivityOptions options;
+            options = ActivityOptions
+                    .makeSceneTransitionAnimation(this, questionTile, "sharedValue");
+            startActivityForResult(intent, REQUEST_CODE_ANSWER_QUESTION, options.toBundle());
+        }
+
         mLastQuestionView = questionTile;
-        startActivityForResult(intent, REQUEST_CODE_ANSWER_QUESTION, options.toBundle());
     }
 
     @Override

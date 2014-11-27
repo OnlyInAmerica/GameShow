@@ -1,109 +1,125 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-     xmlns:tools="http://schemas.android.com/tools"
-     android:layout_width="match_parent"
-     android:layout_height="match_parent"
-     android:background="@color/board"
-     android:paddingBottom="@dimen/activity_vertical_margin"
-     android:paddingLeft="@dimen/activity_horizontal_margin"
-     android:paddingRight="@dimen/activity_horizontal_margin"
-     android:paddingTop="@dimen/activity_vertical_margin"
-     android:transitionName="sharedValue"
-     tools:context="pro.dbro.gameshow.ui.activities.QuestionActivity">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/topContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent"
+    tools:context="pro.dbro.gameshow.ui.activities.QuestionActivity">
 
-     <ProgressBar
-         android:id="@+id/timerBar"
-         style="@android:style/Widget.Material.ProgressBar.Horizontal"
-         android:layout_width="match_parent"
-         android:layout_height="16dp"
-         android:layout_alignParentTop="true"
-         android:indeterminate="false" />
+    <RelativeLayout
+        android:id="@+id/questionContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/board"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:transitionName="sharedValue">
 
-     <TextView
-         android:id="@+id/prompt"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:shadowColor="@android:color/black"
-         android:shadowDx="8"
-         android:shadowDy="8"
-         android:shadowRadius="8"
-         android:layout_above="@+id/speakAnswer"
-         android:layout_below="@id/timerBar"
-         android:layout_alignParentStart="true"
-         android:layout_alignParentEnd="true"
-         android:gravity="center"
-         android:textSize="50sp" />
+        <ProgressBar
+            android:id="@+id/timerBar"
+            style="@android:style/Widget.Material.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="16dp"
+            android:layout_alignParentTop="true"
+            android:indeterminate="false" />
 
-     <Button
-         android:id="@id/speakAnswer"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_alignParentBottom="true"
-         android:layout_centerHorizontal="true"
-         android:layout_marginBottom="16dp"
-         android:background="@drawable/choice_bg"
-         android:focusable="true"
-         android:padding="16dp"
-         android:text="@string/speak_answer"
-         android:textSize="20sp"
-         android:visibility="gone" />
+        <TextView
+            android:id="@+id/prompt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/singleActionBtn"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/timerBar"
+            android:gravity="center"
+            android:shadowColor="@android:color/black"
+            android:shadowDx="8"
+            android:shadowDy="8"
+            android:shadowRadius="8"
+            android:textSize="50sp" />
 
-     <LinearLayout
-         android:id="@+id/choiceContainer"
-         style="?android:attr/buttonBarStyle"
-         android:layout_width="match_parent"
-         android:layout_height="wrap_content"
-         android:layout_alignParentBottom="true"
-         android:layout_marginBottom="16dp"
-         android:orientation="horizontal"
-         android:weightSum="4">
+        <Button
+            android:id="@id/singleActionBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/choice_bg"
+            android:focusable="true"
+            android:padding="16dp"
+            android:text="@string/speak_answer"
+            android:textSize="20sp"
+            android:visibility="gone" />
 
-         <Button
-             android:id="@+id/choice1"
-             style="?android:attr/buttonBarButtonStyle"
-             android:layout_width="0dp"
-             android:layout_height="wrap_content"
-             android:layout_weight="1"
-             android:background="@drawable/choice_bg"
-             android:focusable="true"
-             android:gravity="center"
-             android:padding="16dp"
-             android:textSize="20sp" />
+        <LinearLayout
+            android:id="@+id/choiceContainer"
+            style="?android:attr/buttonBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="16dp"
+            android:orientation="horizontal"
+            android:weightSum="4">
 
-         <Button
-             android:id="@+id/choice2"
-             style="?android:attr/buttonBarButtonStyle"
-             android:layout_width="0dp"
-             android:layout_height="wrap_content"
-             android:layout_weight="1"
-             android:background="@drawable/choice_bg"
-             android:focusable="true"
-             android:gravity="center"
-             android:padding="16dp"
-             android:textSize="20sp" />
+            <Button
+                android:id="@+id/choice1"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/choice_bg"
+                android:focusable="true"
+                android:gravity="center"
+                android:padding="16dp"
+                android:textSize="20sp" />
 
-         <Button
-             android:id="@+id/choice3"
-             style="?android:attr/buttonBarButtonStyle"
-             android:layout_width="0dp"
-             android:layout_height="wrap_content"
-             android:layout_weight="1"
-             android:background="@drawable/choice_bg"
-             android:focusable="true"
-             android:gravity="center"
-             android:padding="16dp"
-             android:textSize="20sp" />
+            <Button
+                android:id="@+id/choice2"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/choice_bg"
+                android:focusable="true"
+                android:gravity="center"
+                android:padding="16dp"
+                android:textSize="20sp" />
 
-         <Button
-             android:id="@+id/choice4"
-             style="?android:attr/buttonBarButtonStyle"
-             android:layout_width="0dp"
-             android:layout_height="wrap_content"
-             android:layout_weight="1"
-             android:background="@drawable/choice_bg"
-             android:focusable="true"
-             android:gravity="center"
-             android:padding="16dp"
-             android:textSize="20sp" />
+            <Button
+                android:id="@+id/choice3"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/choice_bg"
+                android:focusable="true"
+                android:gravity="center"
+                android:padding="16dp"
+                android:textSize="20sp" />
 
-     </LinearLayout>
- </RelativeLayout>
+            <Button
+                android:id="@+id/choice4"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/choice_bg"
+                android:focusable="true"
+                android:gravity="center"
+                android:padding="16dp"
+                android:textSize="20sp" />
+
+        </LinearLayout>
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/dailyDouble"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/daily_double"
+        android:visibility="gone" />
+
+</FrameLayout>

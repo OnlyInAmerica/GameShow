@@ -39,8 +39,6 @@ public class JeopardyClient {
             @Override
             public void run() {
                 try {
-                    int totalQuestionsAdded = 0;
-
                     int categoryOffset = (int) (Math.random() * 16690);
                     JsonArray categories = Ion.with(mContext)
                                  .load(String.format("http://jservice.io/api/categories?offset=%d&count=%d", categoryOffset, categoriesMissing))
@@ -81,6 +79,20 @@ public class JeopardyClient {
 
                             //Log.i(TAG, String.format("Added %d/%d questions", ++totalQuestionsAdded,
                             //        Category.REQUIRED_QUESTIONS * Game.REQUIRED_CATEGORIES));
+                        }
+                    }
+
+                    boolean selectedDailyDouble = false;
+                    while (!selectedDailyDouble) {
+                        int categoryIdx = (int) (Math.random() * (Game.REQUIRED_CATEGORIES - 1));
+                        int questionIdx = (int) (Math.random() * (Category.REQUIRED_QUESTIONS - 1));
+                        if (game.categories.get(categoryIdx).questions.size() > questionIdx) {
+                            game.categories.get(categoryIdx).questions.get(questionIdx)
+                                    .isDailyDouble = true;
+                            selectedDailyDouble = true;
+                            Log.d(TAG, String.format("Daily double is %s for %d",
+                                    game.categories.get(categoryIdx).title,
+                                    game.categories.get(categoryIdx).questions.get(questionIdx).value));
                         }
                     }
 

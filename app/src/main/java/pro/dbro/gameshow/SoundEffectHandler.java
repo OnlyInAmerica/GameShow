@@ -19,7 +19,8 @@ public class SoundEffectHandler {
     public static enum SoundType {
         SUCCESS     (R.raw.correct),
         FILL_BOARD  (R.raw.fill_board),
-        OUT_OF_TIME (R.raw.out_of_time);
+        OUT_OF_TIME (R.raw.out_of_time),
+        DAILY_DOUBLE(R.raw.daily_double);
 
         public final int resId;
         public int poolId;

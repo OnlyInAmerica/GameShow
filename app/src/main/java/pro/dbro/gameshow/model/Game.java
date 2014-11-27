@@ -12,6 +12,7 @@ public class Game {
 
     public List<Category> categories;
     public List<Player> players;
+    private Player currentPlayer;
 
     public Game() {
         categories = new ArrayList<>();
@@ -22,11 +23,8 @@ public class Game {
         categories.add(category);
     }
 
-    public void addPlayer(Player player) {
-        players.add(player);
-    }
-
     public void addPlayers(List<Player> players) {
+        currentPlayer = players.get(0);
         this.players.addAll(players);
     }
 
@@ -53,6 +51,22 @@ public class Game {
         }
 
         return winners;
+    }
+
+    public Player getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    public Player advanceCurrentPlayer() {
+        int currentPlayerNumber = players.indexOf(currentPlayer);
+        int nextPlayerNumber = (currentPlayerNumber == players.size() - 1) ?
+                0 : currentPlayerNumber + 1;
+
+        return players.get(nextPlayerNumber);
+    }
+
+    public int getPlayerNumber(Player player) {
+        return players.indexOf(player);
     }
 
 }

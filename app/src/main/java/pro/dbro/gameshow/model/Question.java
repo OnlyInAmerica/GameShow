@@ -13,6 +13,8 @@ public class Question implements Serializable {
     public List<String> choices;
     public int correctChoice;
 
+    public boolean isDailyDouble;
+
     public String getAnswer() {
         if (choices.size() == 1) return choices.get(0);
 

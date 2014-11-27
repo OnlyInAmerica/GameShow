@@ -189,8 +189,15 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
         questionTile.findViewById(R.id.value).setVisibility(View.INVISIBLE);
         questionTile.findViewById(R.id.dollarSign).setVisibility(View.INVISIBLE);
 
-        if (answeredCorrectly) {
-            Question question = (Question) questionTile.getTag();
+        Question question = (Question) questionTile.getTag();
+        if (question.isDailyDouble) {
+            int wager = currentPlayer.score; // TODO Collect Wager
+            if (answeredCorrectly) {
+                incrementPlayerScore(currentPlayer, wager);
+            } else {
+                incrementPlayerScore(currentPlayer, -wager);
+            }
+        } else if (answeredCorrectly) {
             incrementPlayerScore(currentPlayer, question.value);
         }
 
@@ -203,12 +210,8 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
     }
 
     private void advanceCurrentPlayer() {
-        int currentPlayerNumber = game.players.indexOf(currentPlayer);
-        int nextPlayerNumber = (currentPlayerNumber == game.players.size() - 1) ?
-                0 : currentPlayerNumber + 1;
-
-        currentPlayer = game.players.get(nextPlayerNumber);
-        ((RadioButton) playerGroup.getChildAt(nextPlayerNumber)).setChecked(true);
+        currentPlayer = game.advanceCurrentPlayer();
+        ((RadioButton) playerGroup.getChildAt(game.getPlayerNumber(currentPlayer))).setChecked(true);
     }
 
     private void setCurrentPlayer(Player player) {
