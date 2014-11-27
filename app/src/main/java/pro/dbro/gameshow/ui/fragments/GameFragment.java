@@ -125,7 +125,7 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
                     categoryTile.setAlpha(0f);
                     ObjectAnimator anim = ObjectAnimator.ofFloat(categoryTile, "alpha", 0f, 1f);
                     anim.setDuration(300);
-                    anim.setStartDelay((long) (3000 * Math.random()));
+                    anim.setStartDelay((long) (3400 * Math.random()));
                     anim.start();
 
                 } else {
@@ -139,7 +139,7 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
                         questionTile.setAlpha(0f);
                         ObjectAnimator anim = ObjectAnimator.ofFloat(questionTile, "alpha", 0f, 1f);
                         anim.setDuration(300);
-                        anim.setStartDelay((long) (3000 * Math.random()));
+                        anim.setStartDelay((long) (3400 * Math.random()));
                         anim.start();
                     } else {
                         questionTile.setFocusable(false);
