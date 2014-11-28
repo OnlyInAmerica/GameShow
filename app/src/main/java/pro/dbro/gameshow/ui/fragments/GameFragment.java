@@ -197,10 +197,10 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
                 break;
             case INCORRECT:
                 incrementPlayerScore(answeringPlayer, -wager);
-                advanceCurrentPlayer();
+                advanceCurrentPlayerIgnoring(answeringPlayer);
                 break;
             case NO_RESPONSE:
-                advanceCurrentPlayer();
+                advanceCurrentPlayerIgnoring(answeringPlayer);
                 break;
         }
 
@@ -208,6 +208,12 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
         if (game.isComplete()) {
             mListener.onGameComplete(game.getWinners());
         }
+    }
+
+    private void advanceCurrentPlayerIgnoring(Player ignored) {
+        advanceCurrentPlayer();
+        if (game.getCurrentPlayer().equals(ignored))
+            advanceCurrentPlayer();
     }
 
     private void advanceCurrentPlayer() {
