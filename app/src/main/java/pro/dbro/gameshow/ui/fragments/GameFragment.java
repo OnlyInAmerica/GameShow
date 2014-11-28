@@ -33,7 +33,6 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
     private String TAG = getClass().getSimpleName();
 
     private Game game;
-    private int questionsAnswered;
     private SoundEffectHandler mSoundFxHandler;
 
     @InjectView(R.id.playerGroup) RadioGroup playerGroup;
@@ -77,14 +76,13 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
         final int NUM_COLS = game.categories.size();
         final int NUM_ROWS = Category.REQUIRED_QUESTIONS + 1; // +1 for header
 
-        Log.d(TAG, "onCreateView with num players: " + game.players.size());
         List<Player> players = game.players;
 
         for (Player player : players) {
             RadioButton playerButton = new RadioButton(getActivity());
             playerButton.setFocusable(false);
             playerButton.setBackgroundResource(R.drawable.player_bg);
-            playerButton.setText(String.format("%s: %d", player.name, player.score));
+            setPlayerScoreOnTextView(player, playerButton);
             playerButton.setTypeface(tileFont);
             playerButton.setButtonDrawable(null);
             playerButton.setTextSize(30);
@@ -184,8 +182,8 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
                                    int answeringPlayerIdx,
                                    QuestionResult result,
                                    int wager) {
-        questionsAnswered++;
 
+        game.markQuestionAnswered((pro.dbro.gameshow.model.Question) questionTile.getTag());
         questionTile.setFocusable(false);
         questionTile.findViewById(R.id.value).setVisibility(View.INVISIBLE);
         questionTile.findViewById(R.id.dollarSign).setVisibility(View.INVISIBLE);
@@ -207,7 +205,7 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
         }
 
 //        Log.d(TAG, String.format("Answered %d/%d questions", questionsAnswered, game.countQuestions()));
-        if (questionsAnswered == game.countQuestions()) {
+        if (game.isComplete()) {
             mListener.onGameComplete(game.getWinners());
         }
     }
@@ -230,14 +228,13 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
 
     private void updatePlayerScore(Player player, int value, boolean delta) {
         int playerNumber = game.getPlayerNumber(player);
+        player.score = (delta ? player.score + value : value);
 
-        // TODO : Hack to deal with objects being copied upon serialization for Intent transport
-        Player gamePlayer = game.players.get(playerNumber);
-        gamePlayer.score = (delta ? gamePlayer.score + value : value);
+        setPlayerScoreOnTextView(player, ((RadioButton) playerGroup.getChildAt(playerNumber)));
+    }
 
-
-        ((RadioButton) playerGroup.getChildAt(playerNumber))
-                .setText(String.format("%s: %d", gamePlayer.name, gamePlayer.score));
+    private void setPlayerScoreOnTextView(Player player, TextView view) {
+        view.setText(String.format("%s: %d", player.name.toUpperCase(), player.score));
     }
 
     public interface GameListener {

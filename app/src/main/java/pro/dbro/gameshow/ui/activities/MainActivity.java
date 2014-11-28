@@ -128,6 +128,8 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
         Intent intent = new Intent(this, QuestionActivity.class);
         intent.putExtra("question", question);
 
+        mGame.makeQuestionCandidateForDailyDouble(question);
+
         if (question.isDailyDouble) {
             intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
             startActivityForResult(intent, REQUEST_CODE_ANSWER_QUESTION);

@@ -82,20 +82,6 @@ public class JeopardyClient {
                         }
                     }
 
-                    boolean selectedDailyDouble = false;
-                    while (!selectedDailyDouble) {
-                        int categoryIdx = (int) (Math.random() * (Game.REQUIRED_CATEGORIES - 1));
-                        int questionIdx = (int) (Math.random() * (Category.REQUIRED_QUESTIONS - 1));
-                        if (game.categories.get(categoryIdx).questions.size() > questionIdx) {
-                            game.categories.get(categoryIdx).questions.get(questionIdx)
-                                    .isDailyDouble = true;
-                            selectedDailyDouble = true;
-                            Log.d(TAG, String.format("Daily double is %s for %d",
-                                    game.categories.get(categoryIdx).title,
-                                    game.categories.get(categoryIdx).questions.get(questionIdx).value));
-                        }
-                    }
-
                     cb.onGameComplete(game);
                 } catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace();
