@@ -163,7 +163,7 @@ public class QuestionActivity extends Activity {
     }
 
     private void presentWagerSelection() {
-        promptView.setText(String.format("What's your Wager? (Max : %d)", game.getCurrentPlayer().score));
+        promptView.setText(String.format("What's your Wager? (Max : %d)", game.getMaxDailyDoubleWagerForPlayer(game.getCurrentPlayer())));
         singleActionBtn.setText("Speak Wager");
     }
 
@@ -415,7 +415,7 @@ public class QuestionActivity extends Activity {
     private void handleSpokenWager(String spokenWager) {
         wager = 0;
         try {
-            wager = Math.min(Integer.parseInt(spokenWager), game.getCurrentPlayer().score);
+            wager = Math.min(Integer.parseInt(spokenWager), game.getMaxDailyDoubleWagerForPlayer(game.getCurrentPlayer()));
             presentQuestion();
             startQuestionTimer();
         } catch (NumberFormatException e) {
@@ -424,7 +424,8 @@ public class QuestionActivity extends Activity {
             final int[] wagerValues = new int[NUM_WAGER_OPTIONS];
 
             for (int x = 0; x < NUM_WAGER_OPTIONS; x++) {
-                wagerValues[x] = (int) (game.getCurrentPlayer().score * ((x+1)/ (float) NUM_WAGER_OPTIONS));
+                wagerValues[x] = (int) (game.getMaxDailyDoubleWagerForPlayer(game.getCurrentPlayer()) *
+                                 ((x+1)/ (float) NUM_WAGER_OPTIONS));
                 wagerOptions[x] = String.valueOf(wagerValues[x]);
             }
             AlertDialog.Builder builder = new AlertDialog.Builder(this);

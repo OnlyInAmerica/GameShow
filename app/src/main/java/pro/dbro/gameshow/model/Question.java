@@ -14,6 +14,7 @@ public class Question implements Serializable {
     public int correctChoice;
 
     public boolean isDailyDouble;
+    public boolean isAnswered;
 
     public String getAnswer() {
         if (choices.size() == 1) return choices.get(0);

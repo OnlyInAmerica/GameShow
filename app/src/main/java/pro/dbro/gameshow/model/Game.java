@@ -80,6 +80,7 @@ public class Game implements Serializable {
 
     public void markQuestionAnswered(Question question) {
         numQuestionsAnswered++;
+        question.isAnswered = true;
     }
 
     public int getNumQuestionsAnswered() {
@@ -102,6 +103,20 @@ public class Game implements Serializable {
                 numDailyDoublesOffered++;
             }
         }
+    }
+
+    public int getMaxDailyDoubleWagerForPlayer(Player player) {
+        return Math.max(player.score, getHighestAvailabeQuestionValue());
+    }
+
+    public int getHighestAvailabeQuestionValue() {
+        int maxValue = 0;
+        for (Category category : categories) {
+            for (Question question : category.questions) {
+                if (!question.isAnswered && question.value > maxValue) maxValue = question.value;
+            }
+        }
+        return maxValue;
     }
 
 }
