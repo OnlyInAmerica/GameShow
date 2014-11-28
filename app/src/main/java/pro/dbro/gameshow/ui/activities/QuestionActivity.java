@@ -63,7 +63,7 @@ public class QuestionActivity extends Activity {
 
         WILL_SELECT_ANSWER,
 
-        SHOWING_ANSWER,
+        WILL_SELECT_CORRECTNESS,
 
         WILL_SELECT_CORRECT_PLAYER,
         WILL_SELECT_INCORRECT_PLAYER,
@@ -382,7 +382,7 @@ public class QuestionActivity extends Activity {
                 presentSelectAnsweringPlayer();
             }
         } else {
-            state = State.SHOWING_ANSWER;
+            state = State.WILL_SELECT_CORRECTNESS;
             String spokenAnswerObject = spokenAnswer;
             for (String prefix : IGNORED_PREFIXES) {
                 String prefixWithLeadingCapital = prefix.substring(0, 1).toUpperCase() + prefix.substring(1);
@@ -455,10 +455,13 @@ public class QuestionActivity extends Activity {
                                         CORRECT : INCORRECT);
                 break;
 
-            case SHOWING_ANSWER:
+            case WILL_SELECT_CORRECTNESS:
                 boolean answeredCorrectly = (boolean) selectedAnswerView.getTag();
 
-                if (answeredCorrectly) state = State.WILL_SELECT_CORRECT_PLAYER;
+                if (answeredCorrectly) {
+                    state = State.WILL_SELECT_CORRECT_PLAYER;
+                    mSoundFxHandler.playSound(SoundEffectHandler.SoundType.SUCCESS);
+                }
 
                 if (question.isDailyDouble) {
                     finishWithQuestionResult(answeredCorrectly ? CORRECT : INCORRECT);
