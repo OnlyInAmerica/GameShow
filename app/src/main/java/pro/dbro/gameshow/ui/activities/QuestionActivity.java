@@ -65,7 +65,8 @@ public class QuestionActivity extends Activity {
 
         SHOWING_ANSWER,
 
-        SELECTING_CORRECT_PLAYER,
+        WILL_SELECT_CORRECT_PLAYER,
+        WILL_SELECT_INCORRECT_PLAYER,
 
         OUT_OF_TIME
     }
@@ -167,7 +168,7 @@ public class QuestionActivity extends Activity {
     }
 
     private void presentSelectAnsweringPlayer() {
-        promptView.setText("Who got it?");
+        promptView.setText("Who Answered?");
         singleActionBtn.setVisibility(View.INVISIBLE);
         choiceContainer.setVisibility(View.VISIBLE);
         for(int x = 0; x < choiceViews.size(); x++) {
@@ -377,7 +378,7 @@ public class QuestionActivity extends Activity {
             if (question.isDailyDouble) {
                 finishWithQuestionResult(CORRECT);
             } else {
-                state = State.SELECTING_CORRECT_PLAYER;
+                state = State.WILL_SELECT_CORRECT_PLAYER;
                 presentSelectAnsweringPlayer();
             }
         } else {
@@ -446,26 +447,35 @@ public class QuestionActivity extends Activity {
             case OUT_OF_TIME:
                 finishWithQuestionResult(NO_RESPONSE);
                 break;
+
             case WILL_SELECT_ANSWER:
                 timerBar.setVisibility(View.INVISIBLE);
                 int selection = (int) selectedAnswerView.getTag();
                 finishWithQuestionResult((selection == question.correctChoice) ?
                                         CORRECT : INCORRECT);
                 break;
+
             case SHOWING_ANSWER:
                 boolean answeredCorrectly = (boolean) selectedAnswerView.getTag();
 
-                if (answeredCorrectly) state = State.SELECTING_CORRECT_PLAYER;
+                if (answeredCorrectly) state = State.WILL_SELECT_CORRECT_PLAYER;
 
-                if (answeredCorrectly && !question.isDailyDouble) {
-                    presentSelectAnsweringPlayer();
+                if (question.isDailyDouble) {
+                    finishWithQuestionResult(answeredCorrectly ? CORRECT : INCORRECT);
                 } else {
-                    finishWithQuestionResult(INCORRECT);
+                    state = answeredCorrectly ? State.WILL_SELECT_CORRECT_PLAYER :
+                                                State.WILL_SELECT_INCORRECT_PLAYER;
+
+                    presentSelectAnsweringPlayer();
                 }
                 break;
-            case SELECTING_CORRECT_PLAYER:
+
+            case WILL_SELECT_CORRECT_PLAYER:
+            case WILL_SELECT_INCORRECT_PLAYER:
                 answeringPlayer = (Player) selectedAnswerView.getTag();
-                finishWithQuestionResult(CORRECT);
+                finishWithQuestionResult((state == State.WILL_SELECT_CORRECT_PLAYER)
+                                          ? CORRECT : INCORRECT);
+
                 break;
         }
     }
