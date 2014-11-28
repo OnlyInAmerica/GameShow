@@ -22,12 +22,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import java.util.List;
 
+import pro.dbro.gameshow.GameManager;
 import pro.dbro.gameshow.JeopardyClient;
 import pro.dbro.gameshow.MusicHandler;
 import pro.dbro.gameshow.R;
@@ -35,9 +34,9 @@ import pro.dbro.gameshow.SoundEffectHandler;
 import pro.dbro.gameshow.model.Game;
 import pro.dbro.gameshow.model.Player;
 import pro.dbro.gameshow.model.Question;
+import pro.dbro.gameshow.ui.QuestionAnsweredListener;
 import pro.dbro.gameshow.ui.fragments.ChoosePlayerFragment;
 import pro.dbro.gameshow.ui.fragments.GameFragment;
-import pro.dbro.gameshow.ui.QuestionAnsweredListener;
 
 /*
  * MainActivity class that loads MainFragment
@@ -64,16 +63,6 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-//        try {
-//            AssetManager assetManager = getAssets();
-//            InputStream ims = assetManager.open("games/default.json");
-//
-//            Gson gson = new Gson();
-//            Reader reader = new InputStreamReader(ims);
-//
-//            Game game = gson.fromJson(reader, Game.class);
-
         createGame();
         showChoosePlayerFragment();
         mSoundFxHandler = SoundEffectHandler.getInstance(this);
@@ -83,7 +72,20 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
     private void createGame() {
         mAddedPlayers = false;
         mGameReady = false;
-        mGame = new Game();
+
+//        try {
+//            AssetManager assetManager = getAssets();
+//            InputStream ims = null;
+//            ims = assetManager.open("games/thxgiving.json");
+//            Gson gson = new Gson();
+//            Reader reader = new InputStreamReader(ims);
+//            Game game = gson.fromJson(reader, Game.class);
+//            GameManager.setGame(game);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
+        mGame = GameManager.getInstance();
 
         JeopardyClient client = new JeopardyClient(this);
         client.completeGame(mGame, new JeopardyClient.GameCompleteCallback() {
@@ -125,7 +127,6 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
         questionTile.setTransitionName("sharedValue");
         Intent intent = new Intent(this, QuestionActivity.class);
         intent.putExtra("question", question);
-        intent.putExtra("player", mGame.getCurrentPlayer());
 
         if (question.isDailyDouble) {
             intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
@@ -144,12 +145,25 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check which request we're responding to
         if (requestCode == REQUEST_CODE_ANSWER_QUESTION) {
-            boolean wasCorrect = resultCode == QuestionActivity.ANSWERED_CORRECT;
+            QuestionAnsweredListener.QuestionResult result = null;
 
-            if (wasCorrect) mSoundFxHandler.playSound(SoundEffectHandler.SoundType.SUCCESS);
+            switch(resultCode) {
+                case QuestionActivity.CORRECT:
+                    result = QuestionAnsweredListener.QuestionResult.CORRECT;
+                    break;
+                case QuestionActivity.INCORRECT:
+                    result = QuestionAnsweredListener.QuestionResult.INCORRECT;
+                    break;
+                case QuestionActivity.NO_RESPONSE:
+                    result = QuestionAnsweredListener.QuestionResult.NO_RESPONSE;
+                    break;
+            }
 
             ((QuestionAnsweredListener) getFragmentManager().findFragmentByTag("gameFrag"))
-                    .onQuestionAnswered(mLastQuestionView, wasCorrect);
+                    .onQuestionAnswered(mLastQuestionView,
+                                        data.getIntExtra("answeringPlayerIdx", -1),
+                                        result,
+                                        data.getIntExtra("wager", -1));
         }
     }
 

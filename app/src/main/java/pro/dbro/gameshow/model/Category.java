@@ -1,12 +1,13 @@
 package pro.dbro.gameshow.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by davidbrodsky on 11/22/14.
  */
-public class Category {
+public class Category implements Serializable{
 
     public static final int REQUIRED_QUESTIONS = 5;
 

@@ -25,7 +25,6 @@ import android.widget.TextView;
 
 import org.apache.airavata.samples.LevenshteinDistanceService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -33,9 +32,11 @@ import butterknife.InjectView;
 import butterknife.InjectViews;
 import butterknife.OnClick;
 import de.robert_heim.animation.ActivitySwitcher;
+import pro.dbro.gameshow.GameManager;
 import pro.dbro.gameshow.R;
 import pro.dbro.gameshow.RecognitionAdapter;
 import pro.dbro.gameshow.SoundEffectHandler;
+import pro.dbro.gameshow.model.Game;
 import pro.dbro.gameshow.model.Player;
 import pro.dbro.gameshow.model.Question;
 
@@ -44,11 +45,14 @@ public class QuestionActivity extends Activity {
     public final String TAG = this.getClass().getSimpleName();
 
     public static String INTENT_ACTION = "pro.dbro.gameshow.QuestionResult";
-    public static int ANSWERED_CORRECT = 1;
-    public static int ANSWERED_INCORRECT = 0;
+
+    /** Intent result codes */
+    public static final int NO_RESPONSE = 2;
+    public static final int CORRECT = 1;
+    public static final int INCORRECT = 0;
 
     private static int QUESTION_ANSWER_TIME_MS = 15 * 1000;
-    private static int SPEECH_RECOGNITION_TIMEOUT_MS = 20 * 1000;
+    private static int SPEECH_RECOGNITION_TIMEOUT_MS = 12 * 1000;
 
     private static enum State {
         WILL_SPEAK_WAGER,
@@ -61,10 +65,13 @@ public class QuestionActivity extends Activity {
 
         SHOWING_ANSWER,
 
+        SELECTING_CORRECT_PLAYER,
+
         OUT_OF_TIME
     }
 
-    private Player currentPlayer;
+    private Game game;
+    private Player answeringPlayer;
     private Question question;
     private State state;
     private int wager;
@@ -98,8 +105,11 @@ public class QuestionActivity extends Activity {
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         ButterKnife.inject(this);
 
+        // TODO : Get current Question from Game
         question = (Question) getIntent().getExtras().getSerializable("question");
-        currentPlayer = (Player) getIntent().getExtras().getSerializable("player");
+        game = GameManager.getInstance();
+
+        answeringPlayer = game.getCurrentPlayer();
 
         final Typeface promptTypeface = Typeface.createFromAsset(getAssets(), "fonts/Korinna_Bold.ttf");
         promptView.setTypeface(promptTypeface);
@@ -130,7 +140,7 @@ public class QuestionActivity extends Activity {
             });
         } else {
             presentQuestion();
-            startTimer();
+            startQuestionTimer();
         }
         super.onResume();
     }
@@ -152,8 +162,26 @@ public class QuestionActivity extends Activity {
     }
 
     private void presentWagerSelection() {
-        promptView.setText(String.format("What is your Wager? (Max : %d)", currentPlayer.score));
+        promptView.setText(String.format("What's your Wager? (Max : %d)", game.getCurrentPlayer().score));
         singleActionBtn.setText("Speak Wager");
+    }
+
+    private void presentSelectAnsweringPlayer() {
+        promptView.setText("Who got it?");
+        singleActionBtn.setVisibility(View.INVISIBLE);
+        choiceContainer.setVisibility(View.VISIBLE);
+        for(int x = 0; x < choiceViews.size(); x++) {
+            if (x < game.players.size()) {
+                choiceViews.get(x).setVisibility(View.VISIBLE);
+                choiceViews.get(x).setFocusable(true);
+                choiceViews.get(x).setText(game.players.get(x).name);
+                choiceViews.get(x).setTag(game.players.get(x));
+            } else {
+                choiceViews.get(x).setFocusable(false);
+                choiceViews.get(x).setVisibility(View.GONE);
+                choiceViews.get(x).setText("");
+            }
+        }
     }
 
     private void prepareSpeechRecognizer() {
@@ -222,8 +250,10 @@ public class QuestionActivity extends Activity {
         stopSpeechRecognizer();
     }
 
-    private void startTimer() {
-        ObjectAnimator animation = ObjectAnimator.ofInt(timerBar, "progress", 100, 0);
+    private void startQuestionTimer() {
+        if (mCountdownTimer != null) mCountdownTimer.cancel();
+
+        ObjectAnimator animation = ObjectAnimator.ofInt(timerBar, "progress", 300, 0);
         animation.setInterpolator(new LinearInterpolator());
         animation.setDuration(QUESTION_ANSWER_TIME_MS);
         animation.start();
@@ -240,6 +270,24 @@ public class QuestionActivity extends Activity {
                     choiceContainer.setVisibility(View.GONE);
                     singleActionBtn.setVisibility(View.VISIBLE);
                     singleActionBtn.setText(getString(R.string.continue_on));
+                }
+            }
+        }.start();
+    }
+
+    private void startSpeechRecognitionTimeoutTimer() {
+        if (mCountdownTimer != null) mCountdownTimer.cancel();
+
+        mCountdownTimer = new CountDownTimer(SPEECH_RECOGNITION_TIMEOUT_MS, SPEECH_RECOGNITION_TIMEOUT_MS) {
+            @Override
+            public void onTick(long millisUntilFinished) {}
+
+            @Override
+            public void onFinish() {
+                switch (state) {
+                    case SPEAKING_ANSWER:
+                    case SPEAKING_WAGER:
+                        handleSpeechRecognized("?");
                 }
             }
         }.start();
@@ -265,7 +313,7 @@ public class QuestionActivity extends Activity {
 
                 return;
             case OUT_OF_TIME:
-                finishWithQuestionResult(false);
+                finishWithQuestionResult(NO_RESPONSE);
                 return;
 
             case SPEAKING_ANSWER:
@@ -280,24 +328,6 @@ public class QuestionActivity extends Activity {
                 startSpeechRecognitionTimeoutTimer();
                 break;
         }
-    }
-
-    private void startSpeechRecognitionTimeoutTimer() {
-        if (mCountdownTimer != null) mCountdownTimer.cancel();
-
-        mCountdownTimer = new CountDownTimer(SPEECH_RECOGNITION_TIMEOUT_MS, SPEECH_RECOGNITION_TIMEOUT_MS) {
-            @Override
-            public void onTick(long millisUntilFinished) {}
-
-            @Override
-            public void onFinish() {
-                switch (state) {
-                    case SPEAKING_ANSWER:
-                    case SPEAKING_WAGER:
-                        handleSpeechRecognized("?");
-                }
-            }
-        }.start();
     }
 
     private void handleSpeechRecognized(String recognizedSpeech) {
@@ -316,7 +346,6 @@ public class QuestionActivity extends Activity {
             = new String[] {"what is", "what's", "what are", "what're", "who is", "who's", "who are", "who're" };
 
     private void handleSpokenAnswer(String spokenAnswer, String correctAnswer) {
-        state = State.SHOWING_ANSWER;
         mCountdownTimer.cancel();
 
         // Remove all case, whitespace, and non alphabetical characters
@@ -344,8 +373,15 @@ public class QuestionActivity extends Activity {
         Log.d(TAG, String.format("Match: '%s' - '%s' is %f", spokenAnswer, correctAnswer, match));
 
         if (match > .7) {
-            finishWithQuestionResult(true);
+            mSoundFxHandler.playSound(SoundEffectHandler.SoundType.SUCCESS);
+            if (question.isDailyDouble) {
+                finishWithQuestionResult(CORRECT);
+            } else {
+                state = State.SELECTING_CORRECT_PLAYER;
+                presentSelectAnsweringPlayer();
+            }
         } else {
+            state = State.SHOWING_ANSWER;
             String spokenAnswerObject = spokenAnswer;
             for (String prefix : IGNORED_PREFIXES) {
                 String prefixWithLeadingCapital = prefix.substring(0, 1).toUpperCase() + prefix.substring(1);
@@ -364,7 +400,7 @@ public class QuestionActivity extends Activity {
             promptView.setLayoutParams(params);
 
             choiceContainer.setVisibility(View.VISIBLE);
-            singleActionBtn.setVisibility(View.GONE);
+            singleActionBtn.setVisibility(View.INVISIBLE);
             choiceViews.get(0).setVisibility(View.INVISIBLE);
             choiceViews.get(1).setText("I'm Right");
             choiceViews.get(1).setTag(true);
@@ -378,16 +414,16 @@ public class QuestionActivity extends Activity {
     private void handleSpokenWager(String spokenWager) {
         wager = 0;
         try {
-            wager = Math.min(Integer.parseInt(spokenWager), currentPlayer.score);
+            wager = Math.min(Integer.parseInt(spokenWager), game.getCurrentPlayer().score);
             presentQuestion();
-            startTimer();
+            startQuestionTimer();
         } catch (NumberFormatException e) {
             final int NUM_WAGER_OPTIONS = 5;
             String[] wagerOptions = new String[NUM_WAGER_OPTIONS];
             final int[] wagerValues = new int[NUM_WAGER_OPTIONS];
 
             for (int x = 0; x < NUM_WAGER_OPTIONS; x++) {
-                wagerValues[x] = (int) (x * (currentPlayer.score / (float) NUM_WAGER_OPTIONS));
+                wagerValues[x] = (int) (game.getCurrentPlayer().score * ((x+1)/ (float) NUM_WAGER_OPTIONS));
                 wagerOptions[x] = String.valueOf(wagerValues[x]);
             }
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -397,7 +433,7 @@ public class QuestionActivity extends Activity {
                 public void onClick(DialogInterface dialog, int which) {
                     wager = wagerValues[which];
                     presentQuestion();
-                    startTimer();
+                    startQuestionTimer();
                 }
             });
             builder.show();
@@ -405,26 +441,40 @@ public class QuestionActivity extends Activity {
     }
 
     @OnClick({R.id.choice1, R.id.choice2, R.id.choice3, R.id.choice4})
-    public void onAnswerSelected(View selectedAnswerView) {
+    public void onChoiceSelected(View selectedAnswerView) {
         switch (state) {
             case OUT_OF_TIME:
-                finishWithQuestionResult(false);
+                finishWithQuestionResult(NO_RESPONSE);
                 break;
             case WILL_SELECT_ANSWER:
                 timerBar.setVisibility(View.INVISIBLE);
                 int selection = (int) selectedAnswerView.getTag();
-                finishWithQuestionResult(selection == question.correctChoice);
+                finishWithQuestionResult((selection == question.correctChoice) ?
+                                        CORRECT : INCORRECT);
                 break;
             case SHOWING_ANSWER:
                 boolean answeredCorrectly = (boolean) selectedAnswerView.getTag();
-                finishWithQuestionResult(answeredCorrectly);
+
+                if (answeredCorrectly) state = State.SELECTING_CORRECT_PLAYER;
+
+                if (answeredCorrectly && !question.isDailyDouble) {
+                    presentSelectAnsweringPlayer();
+                } else {
+                    finishWithQuestionResult(INCORRECT);
+                }
+                break;
+            case SELECTING_CORRECT_PLAYER:
+                answeringPlayer = (Player) selectedAnswerView.getTag();
+                finishWithQuestionResult(CORRECT);
                 break;
         }
     }
 
-    private void finishWithQuestionResult(boolean correctAnswer) {
+    private void finishWithQuestionResult(int resultCode) {
         Intent result = new Intent(INTENT_ACTION);
-        setResult((correctAnswer ? ANSWERED_CORRECT : ANSWERED_INCORRECT), result);
+        result.putExtra("answeringPlayerIdx", game.getPlayerNumber(answeringPlayer));
+        result.putExtra("wager", (question.isDailyDouble ? wager : question.value));
+        setResult(resultCode, result);
         finish();
     }
 

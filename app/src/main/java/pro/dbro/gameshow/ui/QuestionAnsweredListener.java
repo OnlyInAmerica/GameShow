@@ -7,5 +7,7 @@ import android.view.ViewGroup;
   */
  public interface QuestionAnsweredListener {
 
-    public void onQuestionAnswered(ViewGroup questionTile, boolean answeredCorrectly);
+    public static enum QuestionResult { NO_RESPONSE, INCORRECT, CORRECT }
+
+    public void onQuestionAnswered(ViewGroup questionTile, int answeringPlayerIdx, QuestionResult result, int wager);
  }

@@ -26,7 +26,6 @@ import pro.dbro.gameshow.SoundEffectHandler;
 import pro.dbro.gameshow.model.Category;
 import pro.dbro.gameshow.model.Game;
 import pro.dbro.gameshow.model.Player;
-import pro.dbro.gameshow.model.Question;
 import pro.dbro.gameshow.ui.QuestionAnsweredListener;
 
 
@@ -34,7 +33,6 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
     private String TAG = getClass().getSimpleName();
 
     private Game game;
-    private Player currentPlayer;
     private int questionsAnswered;
     private SoundEffectHandler mSoundFxHandler;
 
@@ -182,26 +180,31 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
     }
 
     @Override
-    public void onQuestionAnswered(ViewGroup questionTile, boolean answeredCorrectly) {
+    public void onQuestionAnswered(ViewGroup questionTile,
+                                   int answeringPlayerIdx,
+                                   QuestionResult result,
+                                   int wager) {
         questionsAnswered++;
 
         questionTile.setFocusable(false);
         questionTile.findViewById(R.id.value).setVisibility(View.INVISIBLE);
         questionTile.findViewById(R.id.dollarSign).setVisibility(View.INVISIBLE);
 
-        Question question = (Question) questionTile.getTag();
-        if (question.isDailyDouble) {
-            int wager = currentPlayer.score; // TODO Collect Wager
-            if (answeredCorrectly) {
-                incrementPlayerScore(currentPlayer, wager);
-            } else {
-                incrementPlayerScore(currentPlayer, -wager);
-            }
-        } else if (answeredCorrectly) {
-            incrementPlayerScore(currentPlayer, question.value);
-        }
+        Player answeringPlayer = game.players.get(answeringPlayerIdx);
 
-        advanceCurrentPlayer();
+        switch (result) {
+            case CORRECT:
+                incrementPlayerScore(answeringPlayer, wager);
+                setCurrentPlayer(answeringPlayer);
+                break;
+            case INCORRECT:
+                incrementPlayerScore(answeringPlayer, -wager);
+                advanceCurrentPlayer();
+                break;
+            case NO_RESPONSE:
+                advanceCurrentPlayer();
+                break;
+        }
 
 //        Log.d(TAG, String.format("Answered %d/%d questions", questionsAnswered, game.countQuestions()));
         if (questionsAnswered == game.countQuestions()) {
@@ -210,14 +213,15 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
     }
 
     private void advanceCurrentPlayer() {
-        currentPlayer = game.advanceCurrentPlayer();
-        ((RadioButton) playerGroup.getChildAt(game.getPlayerNumber(currentPlayer))).setChecked(true);
+        Player nextPlayer = game.advanceCurrentPlayer();
+        ((RadioButton) playerGroup.getChildAt(game.getPlayerNumber(nextPlayer)))
+                .setChecked(true);
     }
 
     private void setCurrentPlayer(Player player) {
-        int playerNumber = game.players.indexOf(player);
-        currentPlayer = player;
-        ((RadioButton) playerGroup.getChildAt(playerNumber)).setChecked(true);
+        game.setCurrentPlayer(player);
+        ((RadioButton) playerGroup.getChildAt(game.getPlayerNumber(player)))
+                .setChecked(true);
     }
 
     private void incrementPlayerScore(Player player, int value) {
@@ -225,11 +229,15 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
     }
 
     private void updatePlayerScore(Player player, int value, boolean delta) {
-        player.score = (delta ? player.score + value : value);
+        int playerNumber = game.getPlayerNumber(player);
 
-        int playerNumber = game.players.indexOf(player);
+        // TODO : Hack to deal with objects being copied upon serialization for Intent transport
+        Player gamePlayer = game.players.get(playerNumber);
+        gamePlayer.score = (delta ? gamePlayer.score + value : value);
+
+
         ((RadioButton) playerGroup.getChildAt(playerNumber))
-                .setText(String.format("%s: %d", player.name, player.score));
+                .setText(String.format("%s: %d", gamePlayer.name, gamePlayer.score));
     }
 
     public interface GameListener {

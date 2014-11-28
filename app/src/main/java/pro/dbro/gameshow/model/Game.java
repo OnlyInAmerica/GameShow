@@ -1,12 +1,15 @@
 package pro.dbro.gameshow.model;
 
+import android.widget.RadioButton;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by davidbrodsky on 11/22/14.
  */
-public class Game {
+public class Game implements Serializable {
 
     public static final int REQUIRED_CATEGORIES = 6;
 
@@ -62,7 +65,12 @@ public class Game {
         int nextPlayerNumber = (currentPlayerNumber == players.size() - 1) ?
                 0 : currentPlayerNumber + 1;
 
-        return players.get(nextPlayerNumber);
+        currentPlayer = players.get(nextPlayerNumber);
+        return currentPlayer;
+    }
+
+    public void setCurrentPlayer(Player player) {
+        currentPlayer = player;
     }
 
     public int getPlayerNumber(Player player) {

@@ -23,7 +23,8 @@
             android:layout_width="match_parent"
             android:layout_height="16dp"
             android:layout_alignParentTop="true"
-            android:indeterminate="false" />
+            android:indeterminate="false"
+            android:max="300"/>
 
         <TextView
             android:id="@+id/prompt"
