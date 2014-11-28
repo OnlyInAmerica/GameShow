@@ -26,9 +26,9 @@
             android:indeterminate="false"
             android:max="300"/>
 
-        <TextView
+        <pro.dbro.gameshow.ui.view.AutoResizeTextView
             android:id="@+id/prompt"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_above="@+id/singleActionBtn"
             android:layout_alignParentEnd="true"
@@ -39,7 +39,7 @@
             android:shadowDx="8"
             android:shadowDy="8"
             android:shadowRadius="8"
-            android:textSize="50sp" />
+            android:textSize="50sp"/>
 
         <Button
             android:id="@id/singleActionBtn"
