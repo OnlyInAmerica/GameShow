@@ -62,7 +62,7 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
         mSoundFxHandler = SoundEffectHandler.getInstance(getActivity());
         mSoundFxHandler.playSound(SoundEffectHandler.SoundType.FILL_BOARD);
         // Inflate the layout for this fragment
-        View root = inflater.inflate(R.layout.fragment_main, container, false);
+        View root = inflater.inflate(R.layout.fragment_game, container, false);
         ButterKnife.inject(this, root);
 
         Typeface gameShowFont = Typeface.createFromAsset(getActivity().getAssets(), "fonts/gyparody.ttf");
