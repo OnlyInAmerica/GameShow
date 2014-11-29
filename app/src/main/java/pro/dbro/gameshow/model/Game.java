@@ -98,7 +98,7 @@ public class Game implements Serializable {
         float percentQuestionsRemaining = (numQuestions - numQuestionsAnswered) / (float) numQuestions;
 
         if (percentQuestionsRemaining < .66) {
-            if (Math.random() < (1 / (numQuestions - numQuestionsAnswered))) {
+            if (Math.random() < (1.0f / (numQuestions - numQuestionsAnswered))) {
                 question.isDailyDouble = true;
                 numDailyDoublesOffered++;
             }
