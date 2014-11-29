@@ -183,6 +183,7 @@ public class QuestionActivity extends Activity {
                 choiceViews.get(x).setText("");
             }
         }
+        choiceViews.get(0).requestFocus();
     }
 
     private void prepareSpeechRecognizer() {
@@ -459,10 +460,8 @@ public class QuestionActivity extends Activity {
             case WILL_SELECT_CORRECTNESS:
                 boolean answeredCorrectly = (boolean) selectedAnswerView.getTag();
 
-                if (answeredCorrectly) {
-                    state = State.WILL_SELECT_CORRECT_PLAYER;
+                if (answeredCorrectly)
                     mSoundFxHandler.playSound(SoundEffectHandler.SoundType.SUCCESS);
-                }
 
                 if (question.isDailyDouble) {
                     finishWithQuestionResult(answeredCorrectly ? CORRECT : INCORRECT);
@@ -495,6 +494,6 @@ public class QuestionActivity extends Activity {
     @Override
     public void onPause() {
         super.onPause();
-        mCountdownTimer.cancel();
+        if (mCountdownTimer != null) mCountdownTimer.cancel();
     }
 }
