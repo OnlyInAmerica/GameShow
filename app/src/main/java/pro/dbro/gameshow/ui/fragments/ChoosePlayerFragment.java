@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.text.InputFilter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,8 @@ import butterknife.OnClick;
 import pro.dbro.gameshow.PreferencesManager;
 import pro.dbro.gameshow.R;
 import pro.dbro.gameshow.model.Player;
+
+import static android.text.InputFilter.*;
 
 public class ChoosePlayerFragment extends Fragment {
 
@@ -124,7 +127,8 @@ public class ChoosePlayerFragment extends Fragment {
     private void addNewPlayerEntryView(ViewGroup container, String name) {
         EditText playerEntry = new EditText(getActivity());
         playerEntry.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        playerEntry.setTag("player-" + container.getChildCount()); // for testing
+        playerEntry.setTag("player-" + container.getChildCount()); // for espresso testing
+        playerEntry.setFilters(new InputFilter[] {new LengthFilter(getResources().getInteger(R.integer.player_name_max_length))});
         playerEntry.setHint(getActivity().getString(R.string.new_player));
         if (name != null) playerEntry.setText(name);
         playerEntry.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_user_white_small, 0, 0, 0);
