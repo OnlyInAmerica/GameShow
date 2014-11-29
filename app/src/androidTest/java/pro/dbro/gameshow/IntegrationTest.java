@@ -9,16 +9,13 @@ import android.test.ActivityInstrumentationTestCase2;
 import android.test.TouchUtils;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.squareup.spoon.Spoon;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
+import pro.dbro.gameshow.model.Question;
 import pro.dbro.gameshow.ui.activities.MainActivity;
 import pro.dbro.gameshow.ui.activities.QuestionActivity;
 
@@ -41,10 +38,7 @@ import pro.dbro.gameshow.ui.activities.QuestionActivity;
 public class IntegrationTest extends ActivityInstrumentationTestCase2<MainActivity> {
     public static final String TAG = "IntegrationTest";
 
-    private static final int TIME_SCALE = 1; // Adjust time scale for events optimized to reduce test time at expense of human readability
-
     private MainActivity mainActivity;
-    private Button addPlayerBtn;
 
     public IntegrationTest() {
         super(MainActivity.class);
@@ -57,41 +51,47 @@ public class IntegrationTest extends ActivityInstrumentationTestCase2<MainActivi
         setActivityInitialTouchMode(false);
 
         mainActivity = getActivity();
-        addPlayerBtn = (Button) mainActivity.findViewById(R.id.addPlayerBtn);
     }
 
     /**
-     * Test to make sure that spinner values are persisted across activity restarts.
+     * Make sure an entire game can be played without throwing an exception.
      *
-     * <p>Launches the main activity, sets a spinner value, closes the activity, then relaunches
-     * that activity. Checks to make sure that the spinner values match what we set them to.
+     * Ensures at least one DailyDouble occurs.
+     *
      */
-    // BEGIN_INCLUDE (test_name)
-    public void testSpinnerValuePersistedBetweenLaunches() throws InterruptedException {
-        // END_INCLUDE (test_name)
+    public void testGameCompletesWithoutException() throws InterruptedException {
 
         Instrumentation instrumentation = getInstrumentation();
 
-        final MainActivity mainActivity = getActivity();
-
         String[] playerNames = new String[] { "Alice", "Bob", "Charlie", "Devon" };
         ViewGroup playerContainer = ((ViewGroup) mainActivity.findViewById(R.id.playerContainer));
-        boolean arePlayersEntered = playerContainer.getChildCount() > 1;
+        assertNotNull(playerContainer);
+        int playersEntered = playerContainer.getChildCount();
 
-        if (!arePlayersEntered) {
-            sendKeys(KeyEvent.KEYCODE_BACK,         // Collapse keyboard
-                    KeyEvent.KEYCODE_DPAD_DOWN,     // Select Add Player
-                    KeyEvent.KEYCODE_DPAD_CENTER,   // Add 3 more players
-                    KeyEvent.KEYCODE_DPAD_CENTER,
-                    KeyEvent.KEYCODE_DPAD_CENTER);
+        if (playersEntered == 1 && ((TextView) playerContainer.getChildAt(0)).getText().length() == 0) {
+            // Focused on first player name EditText
+            sendKeys(KeyEvent.KEYCODE_BACK);        // dismiss keyboard
+            instrumentation.waitForIdleSync();
+            sendKeys(KeyEvent.KEYCODE_DPAD_DOWN);   // move to add player button
+        } else {
+            // Focus begins on play button
+            sendKeys(KeyEvent.KEYCODE_DPAD_LEFT,
+                     KeyEvent.KEYCODE_DPAD_LEFT);
         }
 
+        // Click add player button until we have all players
+        for (int x = 0; x < (playerNames.length - playersEntered); x++) {
+            sendKeys(KeyEvent.KEYCODE_DPAD_CENTER);
+            instrumentation.waitForIdleSync();
+        }
+
+        // Make sure each player name field has some value
         for (int x = 0; x < playerNames.length; x++) {
             sendKeys(KeyEvent.KEYCODE_DPAD_UP);
-            typeInputToView(playerNames[x], (EditText) playerContainer.getChildAt(x));
+            if ( ((EditText) playerContainer.getChildAt(x)).getText().length() == 0)
+                typeInputToView(playerNames[x], (EditText) playerContainer.getChildAt(x));
         }
 
-        Thread.sleep(150);
         Spoon.screenshot(mainActivity, "player_selection");
 
         Thread.sleep(5 * 1000); // Give JeopardyClient time to populate Game Board
@@ -102,64 +102,92 @@ public class IntegrationTest extends ActivityInstrumentationTestCase2<MainActivi
         Spoon.screenshot(mainActivity, "game_board");
 
         // Answer every question
+        int numDailyDoubles = 0;
         int numQuestions = mainActivity.mGame.countQuestions();
         sendKeys(KeyEvent.KEYCODE_DPAD_RIGHT); // Select first question
         for(int x = 0; x < numQuestions; x++) {
-            Thread.sleep(50 * TIME_SCALE);
 
             Instrumentation.ActivityMonitor questionActivityMonitor =
                     instrumentation.addMonitor(QuestionActivity.class.getName(), null, false);
 
-            Log.i(TAG, "Select Question");
             sendKeys(KeyEvent.KEYCODE_DPAD_CENTER);
 
-            Log.i(TAG, "QuestionActivity launch timeout begins now");
-            // Register we are interested in the authentication activiry...
-//            assertTrue(getInstrumentation().checkMonitorHit(questionActivityMonitor, 1));
-//            getInstrumentation().waitForMonitor()
             Activity questionActivity = getInstrumentation().waitForMonitorWithTimeout(questionActivityMonitor, 5 * 1000);
             assertNotNull(questionActivity);
-            Thread.sleep(5 * 1000); // Wait for question animation (possibly inc. DailyDouble)
+
+            Question currentQuestion = (Question) questionActivity.getIntent().getExtras().getSerializable("question");
+
+            if (currentQuestion.isDailyDouble) Thread.sleep(2600); // Wait for DailyDouble animation
+
             Spoon.screenshot(mainActivity, "question");
 
-            Log.i(TAG, "Select Speak Answer");
+            if (currentQuestion.isDailyDouble) {
+                numDailyDoubles++;
+                sendKeys(KeyEvent.KEYCODE_DPAD_CENTER); // Select Speak Wager
+                Thread.sleep(1000); // Wait for Speech recognition to fail
+                sendKeys(KeyEvent.KEYCODE_DPAD_DOWN); // Select second suggested wager
+                instrumentation.waitForIdleSync();
+                sendKeys(KeyEvent.KEYCODE_DPAD_CENTER); // Lock in wager
+                instrumentation.waitForIdleSync();
+            }
+
             sendKeys(KeyEvent.KEYCODE_DPAD_CENTER); // Select Speak Answer
+            instrumentation.waitForIdleSync();
 
-            // Speech recognition instantly fails
+            // Wait for Speech recognition to fail
             Thread.sleep(500);
+            boolean displayingSpeechResult = false;
+            for (int speechRetry = 0; speechRetry < 2; speechRetry++) {
+                displayingSpeechResult = ((TextView) questionActivity.findViewById(R.id.prompt)).getText().toString().contains("Heard");
+                if (displayingSpeechResult) break;
+                Thread.sleep(500);
+            }
+            if (!displayingSpeechResult) {
+                Log.i(TAG, "Speech recognition failed to finish on question " + x);
+            }
+            assertTrue(displayingSpeechResult);
 
-            final AtomicBoolean answeredCorrect = new AtomicBoolean(false);
+            // Select "I'm Right" / "I'm Wrong"
+            if (Math.random() < .5) {
+                // Select "I'm Right" occasionally
+                sendKeys(KeyEvent.KEYCODE_DPAD_LEFT);
+                instrumentation.waitForIdleSync();
+            }
 
-            answeredCorrect.set(
-                    ((TextView) questionActivity.findViewById(R.id.choice1)).getText().length() > 0);
+            if (currentQuestion.isDailyDouble) {
+                // If daily double, question will be complete
 
-            Thread.sleep(2000);
-            if (!answeredCorrect.get()) {
-                // Select "I'm Right" / "I'm Wrong"
-                if (Math.random() < .5) {
-                    // Select "I'm Right" occasionally
-                    sendKeys(KeyEvent.KEYCODE_DPAD_LEFT);
-                    Log.i(TAG, "Move to I'm Right");
-                    Thread.sleep(50 * TIME_SCALE);
-                }
-                sendKeys(KeyEvent.KEYCODE_DPAD_CENTER); // Select "I'm Wrong"
-                Log.i(TAG, "Select I'm right/wrong");
-                Thread.sleep(100 * TIME_SCALE);
+                Instrumentation.ActivityMonitor mainActivityMonitor =
+                        instrumentation.addMonitor(MainActivity.class.getName(), null, false);
+
+                sendKeys(KeyEvent.KEYCODE_DPAD_CENTER);  // Select "I'm Wrong"
+
+                mainActivity = (MainActivity) getInstrumentation().waitForMonitorWithTimeout(mainActivityMonitor, 5 * 1000);
+
             } else {
-                Log.wtf(TAG, "WTF, how could we speak the right answer without speaking?");
-            }
 
-            // Select Player
-            int whichPlayer = (int) (Math.random() * 4);
-            for (int y = 0; y < whichPlayer; y++) {
-                Log.i(TAG, "Select player to right");
-                sendKeys(KeyEvent.KEYCODE_DPAD_RIGHT); // Select a player to right
-                Thread.sleep(20 * TIME_SCALE);
+                sendKeys(KeyEvent.KEYCODE_DPAD_CENTER); // Select "I'm Wrong"
+                instrumentation.waitForIdleSync();
+
+                // Select Player
+                int whichPlayer = (int) (Math.random() * 4);
+                for(int y = 0; y < whichPlayer; y++) {
+                    // Begins focused on first player (leftmost in button group)
+                    sendKeys(KeyEvent.KEYCODE_DPAD_RIGHT);
+                    instrumentation.waitForIdleSync();
+                }
+
+                Instrumentation.ActivityMonitor mainActivityMonitor =
+                        instrumentation.addMonitor(MainActivity.class.getName(), null, false);
+
+                sendKeys(KeyEvent.KEYCODE_DPAD_CENTER);
+
+                mainActivity = (MainActivity) getInstrumentation().waitForMonitorWithTimeout(mainActivityMonitor, 5 * 1000);
+
             }
-            sendKeys(KeyEvent.KEYCODE_DPAD_CENTER);
-            Log.i(TAG, "Select target player");
-            Thread.sleep(500 * TIME_SCALE); // Wait for QuestionActivity fadeout animation
+            assertNotNull(mainActivity);
         }
+        assertTrue(numDailyDoubles > 1);
     }
 
     private void typeInputToView(String input, final EditText target) {
