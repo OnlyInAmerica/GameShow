@@ -200,11 +200,10 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
                 advanceCurrentPlayerIgnoring(answeringPlayer);
                 break;
             case NO_RESPONSE:
-                advanceCurrentPlayerIgnoring(answeringPlayer);
+                // Do nothing
                 break;
         }
 
-//        Log.d(TAG, String.format("Answered %d/%d questions", questionsAnswered, game.countQuestions()));
         if (game.isComplete()) {
             mListener.onGameComplete(game.getWinners());
         }
