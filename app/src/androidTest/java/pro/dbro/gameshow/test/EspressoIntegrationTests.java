@@ -1,4 +1,4 @@
-package pro.dbro.gameshow;
+package pro.dbro.gameshow.test;
 
 import android.app.Application;
 import android.test.ActivityInstrumentationTestCase2;
@@ -23,8 +23,8 @@ import static org.hamcrest.Matchers.is;
  * Disabled until espresso updated for Android 5
  * see: https://code.google.com/p/android-test-kit/issues/detail?id=84
  */
-public class ApplicationTest extends ActivityInstrumentationTestCase2<MainActivity> {
-    public ApplicationTest(String pkg, Class<MainActivity> activityClass) {
+public class EspressoIntegrationTests extends ActivityInstrumentationTestCase2<MainActivity> {
+    public EspressoIntegrationTests(String pkg, Class<MainActivity> activityClass) {
         super(pkg, activityClass);
     }
 

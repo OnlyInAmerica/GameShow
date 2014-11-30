@@ -46,8 +46,7 @@ public class JeopardyClient {
 
                     for (JsonElement categoryJsonElement : categories) {
                         JsonObject categoryJson = categoryJsonElement.getAsJsonObject();
-                        final Category category = new Category();
-                        category.title = categoryJson.get("title").getAsString();
+                        final Category category = new Category(categoryJson.get("title").getAsString());
                         category.jServiceId = categoryJson.get("id").getAsInt();
 
                         game.addCategory(category);

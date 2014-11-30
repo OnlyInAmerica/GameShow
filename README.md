@@ -25,6 +25,14 @@ $ ./gradlew assembleRoyaltyFreeDebug # Royalty-free theme
 $ adb install -r ./app/build/outputs/apk/app-royaltyFree-debug.apk # or app-criminal-debug.apk
 ```
 
+## Testing
+
+Ensure a compatible Android device is available to adb and run:
+
+```
+$ ./gradlew connectedAndroidTest
+```
+
 ## License
 
 MPL 2.0

@@ -14,6 +14,10 @@ public class Category implements Serializable{
     public String title;
     public int jServiceId;
 
+    public Category(String title) {
+        this.title = title;
+    }
+
     public List<Question> questions = new ArrayList<>();
 
     public void addQuestion(Question question) {

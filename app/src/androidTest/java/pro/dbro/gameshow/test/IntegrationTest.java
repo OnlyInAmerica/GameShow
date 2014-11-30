@@ -1,4 +1,4 @@
-package pro.dbro.gameshow;
+package pro.dbro.gameshow.test;
 
 /**
  * Created by davidbrodsky on 11/28/14.
@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.app.Instrumentation;
 import android.test.ActivityInstrumentationTestCase2;
 import android.test.TouchUtils;
+import android.test.suitebuilder.annotation.LargeTest;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 
 import com.squareup.spoon.Spoon;
 
+import pro.dbro.gameshow.R;
 import pro.dbro.gameshow.model.Question;
 import pro.dbro.gameshow.ui.activities.MainActivity;
 import pro.dbro.gameshow.ui.activities.QuestionActivity;
@@ -56,9 +58,11 @@ public class IntegrationTest extends ActivityInstrumentationTestCase2<MainActivi
     /**
      * Make sure an entire game can be played without throwing an exception.
      *
-     * Ensures at least one DailyDouble occurs.
+     * Ensures two DailyDouble occurs.
      *
      */
+
+    @LargeTest
     public void testGameCompletesWithoutException() throws InterruptedException {
 
         Instrumentation instrumentation = getInstrumentation();
@@ -187,7 +191,7 @@ public class IntegrationTest extends ActivityInstrumentationTestCase2<MainActivi
             }
             assertNotNull(mainActivity);
         }
-        assertTrue(numDailyDoubles > 1);
+        assertTrue(numDailyDoubles == 2);
     }
 
     private void typeInputToView(String input, final EditText target) {
