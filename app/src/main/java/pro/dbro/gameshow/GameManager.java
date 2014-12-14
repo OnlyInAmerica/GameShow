@@ -14,7 +14,7 @@ public class GameManager {
         return sGame;
     }
 
-    public static void setGame(Game game) {
-        sGame = game;
+    public static void reset() {
+        sGame = new Game();
     }
 }

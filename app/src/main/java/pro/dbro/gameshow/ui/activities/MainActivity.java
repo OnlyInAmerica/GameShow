@@ -235,6 +235,7 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 mGameReady = false;
+                GameManager.reset();
                 createGame();
                 showChoosePlayerFragment();
             }
