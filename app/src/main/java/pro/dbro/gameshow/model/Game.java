@@ -27,6 +27,12 @@ public class Game implements Serializable {
         categories.add(category);
     }
 
+    public void swapCategory(Category oldCategory, Category newCategory) {
+        int idxOld = categories.indexOf(oldCategory);
+        categories.remove(idxOld);
+        categories.add(idxOld, newCategory);
+    }
+
     public void addPlayers(List<Player> players) {
         currentPlayer = players.get(0);
         this.players.addAll(players);

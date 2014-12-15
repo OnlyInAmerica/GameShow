@@ -31,6 +31,7 @@ import pro.dbro.gameshow.JeopardyClient;
 import pro.dbro.gameshow.MusicHandler;
 import pro.dbro.gameshow.R;
 import pro.dbro.gameshow.SoundEffectHandler;
+import pro.dbro.gameshow.model.Category;
 import pro.dbro.gameshow.model.Game;
 import pro.dbro.gameshow.model.Player;
 import pro.dbro.gameshow.model.Question;
@@ -49,8 +50,8 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
 
     private ViewGroup mLastQuestionView;
 
-    /** Public for testing */
-    public Game mGame;
+    public Game mGame;      // public for testing
+    JeopardyClient mClient;
     private boolean mGameReady = false;
     private boolean mAddedPlayers = false;
 
@@ -87,10 +88,10 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
 
         mGame = GameManager.getInstance();
 
-        JeopardyClient client = new JeopardyClient(this);
-        client.completeGame(mGame, new JeopardyClient.GameCompleteCallback() {
+        mClient = new JeopardyClient(this);
+        mClient.completeGame(mGame, new JeopardyClient.RequestCallback() {
             @Override
-            public void onGameComplete(Game game) {
+            public void onRequestComplete(Game game) {
                 mGameReady = true;
             }
         });
@@ -109,11 +110,26 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if ( (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_A) &&
-                getCurrentFocus() != null && getCurrentFocus() instanceof ViewGroup) {
+        if ( (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_A) && getCurrentFocus() != null) {
 
-            showQuestionActivityForQuestionView((ViewGroup) getCurrentFocus());
-            return true;
+            if (getCurrentFocus() instanceof ViewGroup) {
+
+                showQuestionActivityForQuestionView((ViewGroup) getCurrentFocus());
+                return true;
+
+            } else if (getCurrentFocus().getTag() instanceof Category) {
+                Category oldCategory = (Category) getCurrentFocus().getTag();
+                final int changedCategoryIdx = mGame.categories.indexOf(oldCategory);
+                mClient.replaceGameCategory(mGame, oldCategory, new JeopardyClient.RequestCallback() {
+                    @Override
+                    public void onRequestComplete(Game game) {
+                        ((GameFragment) getFragmentManager().findFragmentByTag("gameFrag"))
+                                .rebindCategoryViews(game.categories.get(changedCategoryIdx));
+                    }
+                });
+                return true;
+
+            }
         } else if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_B) {
             finish();
         }

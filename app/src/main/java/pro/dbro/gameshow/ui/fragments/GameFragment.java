@@ -4,6 +4,7 @@ import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,16 +27,18 @@ import pro.dbro.gameshow.SoundEffectHandler;
 import pro.dbro.gameshow.model.Category;
 import pro.dbro.gameshow.model.Game;
 import pro.dbro.gameshow.model.Player;
+import pro.dbro.gameshow.model.Question;
 import pro.dbro.gameshow.ui.QuestionAnsweredListener;
 
 
 public class GameFragment extends Fragment implements QuestionAnsweredListener {
     private String TAG = getClass().getSimpleName();
 
-    private Game game;
+    private Game mGame;
     private SoundEffectHandler mSoundFxHandler;
 
-    @InjectView(R.id.playerGroup) RadioGroup playerGroup;
+    @InjectView(R.id.playerGroup) RadioGroup mPlayerGroup;
+    @InjectView(R.id.tableLayout) TableLayout mTable;
 
     private GameListener mListener;
 
@@ -50,9 +53,9 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
     }
 
     @SuppressLint("ValidFragment")
-    public GameFragment(Game game) {
+    public GameFragment(Game mGame) {
         super();
-        this.game = game;
+        this.mGame = mGame;
     }
 
     @Override
@@ -71,12 +74,7 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
         TextView headerTitle = ButterKnife.findById(root, R.id.header);
         headerTitle.setTypeface(gameShowFont);
 
-        TableLayout table = ButterKnife.findById(root, R.id.tableLayout);
-
-        final int NUM_COLS = game.categories.size();
-        final int NUM_ROWS = Category.REQUIRED_QUESTIONS + 1; // +1 for header
-
-        List<Player> players = game.players;
+        List<Player> players = mGame.players;
 
         for (Player player : players) {
             RadioButton playerButton = new RadioButton(getActivity());
@@ -91,62 +89,12 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
             RadioGroup.LayoutParams params = new RadioGroup.LayoutParams(RadioGroup.LayoutParams.WRAP_CONTENT, RadioGroup.LayoutParams.WRAP_CONTENT);
             params.setMargins(16, 0, 16, 0);
             playerButton.setLayoutParams(params);
-            playerGroup.addView(playerButton);
+            mPlayerGroup.addView(playerButton);
         }
         setCurrentPlayer(players.get(0));
 
-        for (int x = 0; x < NUM_ROWS; x++) {
-            TableRow row = new TableRow(getActivity());
-            TableLayout.LayoutParams rowParams = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.MATCH_PARENT, 1f);
+        populateBoard(mGame, mTable, inflater);
 
-            if (x == 0) rowParams.setMargins(0, 0, 0, 20);
-
-            row.setLayoutParams(rowParams);
-            row.setGravity(Gravity.CENTER_HORIZONTAL);
-            row.setWeightSum(NUM_COLS);
-            table.addView(row);
-
-
-            for (int y = 0; y < NUM_COLS; y++) {
-                TableRow.LayoutParams params = new TableRow.LayoutParams(0, TableRow.LayoutParams.MATCH_PARENT, 1f);
-                params.setMargins(5, 5, 5, 5);
-
-                if (x == 0) {
-                    TextView categoryTile = (TextView) inflater.inflate(R.layout.category_tile, row, false);
-                    categoryTile.setText(game.categories.get(y).title.toUpperCase());
-                    categoryTile.setLayoutParams(params);
-                    categoryTile.setTypeface(tileFont);
-                    row.addView(categoryTile);
-
-                    categoryTile.setAlpha(0f);
-                    ObjectAnimator anim = ObjectAnimator.ofFloat(categoryTile, "alpha", 0f, 1f);
-                    anim.setDuration(300);
-                    anim.setStartDelay((long) (3400 * Math.random()));
-                    anim.start();
-
-                } else {
-                    ViewGroup questionTile = (ViewGroup) inflater.inflate(R.layout.question_tile, row, false);
-                    ((TextView) questionTile.findViewById(R.id.dollarSign)).setTypeface(tileFont);
-                    if (game.categories.get(y).questions.size() > (x - 1)) {
-                        ((TextView) questionTile.findViewById(R.id.value)).setText(String.format("%d",
-                                game.categories.get(y).questions.get(x - 1).value));
-                        questionTile.setTag(game.categories.get(y).questions.get(x - 1));
-
-                        questionTile.setAlpha(0f);
-                        ObjectAnimator anim = ObjectAnimator.ofFloat(questionTile, "alpha", 0f, 1f);
-                        anim.setDuration(300);
-                        anim.setStartDelay((long) (3400 * Math.random()));
-                        anim.start();
-                    } else {
-                        questionTile.setFocusable(false);
-                        questionTile.findViewById(R.id.dollarSign).setVisibility(View.INVISIBLE);
-                    }
-                    ((TextView) questionTile.findViewById(R.id.value)).setTypeface(tileFont);
-                    questionTile.setLayoutParams(params);
-                    row.addView(questionTile);
-                }
-            }
-        }
         return root;
     }
 
@@ -183,12 +131,13 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
                                    QuestionResult result,
                                    int wager) {
 
-        game.markQuestionAnswered((pro.dbro.gameshow.model.Question) questionTile.getTag());
+        mGame.markQuestionAnswered((pro.dbro.gameshow.model.Question) questionTile.getTag());
+        if (mGame.getNumQuestionsAnswered() == 1) makeCategoriesNotFocusable();
         questionTile.setFocusable(false);
         questionTile.findViewById(R.id.value).setVisibility(View.INVISIBLE);
         questionTile.findViewById(R.id.dollarSign).setVisibility(View.INVISIBLE);
 
-        Player answeringPlayer = game.players.get(answeringPlayerIdx);
+        Player answeringPlayer = mGame.players.get(answeringPlayerIdx);
 
         switch (result) {
             case CORRECT:
@@ -204,26 +153,26 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
                 break;
         }
 
-        if (game.isComplete()) {
-            mListener.onGameComplete(game.getWinners());
+        if (mGame.isComplete()) {
+            mListener.onGameComplete(mGame.getWinners());
         }
     }
 
     private void advanceCurrentPlayerIgnoring(Player ignored) {
         advanceCurrentPlayer();
-        if (game.getCurrentPlayer().equals(ignored))
+        if (mGame.getCurrentPlayer().equals(ignored))
             advanceCurrentPlayer();
     }
 
     private void advanceCurrentPlayer() {
-        Player nextPlayer = game.advanceCurrentPlayer();
-        ((RadioButton) playerGroup.getChildAt(game.getPlayerNumber(nextPlayer)))
+        Player nextPlayer = mGame.advanceCurrentPlayer();
+        ((RadioButton) mPlayerGroup.getChildAt(mGame.getPlayerNumber(nextPlayer)))
                 .setChecked(true);
     }
 
     private void setCurrentPlayer(Player player) {
-        game.setCurrentPlayer(player);
-        ((RadioButton) playerGroup.getChildAt(game.getPlayerNumber(player)))
+        mGame.setCurrentPlayer(player);
+        ((RadioButton) mPlayerGroup.getChildAt(mGame.getPlayerNumber(player)))
                 .setChecked(true);
     }
 
@@ -232,10 +181,10 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
     }
 
     private void updatePlayerScore(Player player, int value, boolean delta) {
-        int playerNumber = game.getPlayerNumber(player);
+        int playerNumber = mGame.getPlayerNumber(player);
         player.score = (delta ? player.score + value : value);
 
-        setPlayerScoreOnTextView(player, ((RadioButton) playerGroup.getChildAt(playerNumber)));
+        setPlayerScoreOnTextView(player, ((RadioButton) mPlayerGroup.getChildAt(playerNumber)));
     }
 
     private void setPlayerScoreOnTextView(Player player, TextView view) {
@@ -244,6 +193,114 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
 
     public interface GameListener {
         public void onGameComplete(List<Player> winners);
+    }
+
+    private void makeCategoriesNotFocusable() {
+        TableRow firstRow = (TableRow) mTable.getChildAt(0);
+
+        for(int colNum = 0; colNum < firstRow.getChildCount(); colNum++) {
+            firstRow.getChildAt(colNum).setFocusable(false);
+        }
+    }
+
+    private void populateBoard(Game game, TableLayout table, LayoutInflater inflater) {
+        if (inflater == null) inflater = (LayoutInflater) table.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        Typeface tileFont = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Swiss_911_Extra_Compressed.ttf");
+
+        final int NUM_COLS = game.categories.size();
+        final int NUM_ROWS = Category.REQUIRED_QUESTIONS + 1; // +1 for header
+
+        for (int rowNum = 0; rowNum < NUM_ROWS; rowNum++) {
+            TableRow row = new TableRow(getActivity());
+            TableLayout.LayoutParams rowParams = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.MATCH_PARENT, 1f);
+
+            if (rowNum == 0) rowParams.setMargins(0, 0, 0, 20);
+
+            row.setLayoutParams(rowParams);
+            row.setGravity(Gravity.CENTER_HORIZONTAL);
+            row.setWeightSum(NUM_COLS);
+            mTable.addView(row);
+
+            for (int colNum = 0; colNum < NUM_COLS; colNum++) {
+                TableRow.LayoutParams params = new TableRow.LayoutParams(0, TableRow.LayoutParams.MATCH_PARENT, 1f);
+                params.setMargins(5, 5, 5, 5);
+
+                if (rowNum == 0) {
+                    TextView categoryTile = (TextView) inflater.inflate(R.layout.category_tile, row, false);
+                    bindCategoryTile(game.categories.get(colNum), categoryTile);
+                    categoryTile.setLayoutParams(params);
+                    categoryTile.setTypeface(tileFont);
+                    row.addView(categoryTile);
+                    startFadeInAnimation(categoryTile, (long) (3400 * Math.random()));
+
+                } else {
+                    ViewGroup questionTile = (ViewGroup) inflater.inflate(R.layout.question_tile, row, false);
+                    ((TextView) questionTile.findViewById(R.id.dollarSign)).setTypeface(tileFont);
+                    if (game.categories.get(colNum).questions.size() > (rowNum - 1)) {
+                        bindQuestionTile(game.categories.get(colNum).questions.get(rowNum - 1),
+                                questionTile);
+                        startFadeInAnimation(questionTile, (long) (3400 * Math.random()));
+                    } else {
+                        questionTile.setFocusable(false);
+                        questionTile.findViewById(R.id.dollarSign).setVisibility(View.INVISIBLE);
+                    }
+                    ((TextView) questionTile.findViewById(R.id.value)).setTypeface(tileFont);
+                    questionTile.setLayoutParams(params);
+                    row.addView(questionTile);
+                }
+            }
+        }
+    }
+
+    private void bindQuestionTile(Question question, ViewGroup questionTile) {
+        ((TextView) questionTile.findViewById(R.id.value)).setText(String.format("%d",
+                question.value));
+        questionTile.setTag(question);
+
+        questionTile.findViewById(R.id.dollarSign).setVisibility(View.VISIBLE);
+        questionTile.findViewById(R.id.value).setVisibility(View.VISIBLE);
+    }
+
+    private void bindCategoryTile(Category category, TextView categoryTile) {
+        categoryTile.setText(category.title.toUpperCase());
+        categoryTile.setTag(category);
+    }
+
+    public void rebindCategoryViews(Category category) {
+        int colIdx = mGame.categories.indexOf(category);
+
+        int numRows = mTable.getChildCount();
+
+        for(int rowNum = 0; rowNum < numRows; rowNum++) {
+            TableRow row = (TableRow) mTable.getChildAt(rowNum);
+
+            if (rowNum == 0) {
+                // Category cell
+                TextView categoryTile = (TextView) row.getChildAt(colIdx);
+                bindCategoryTile(category, categoryTile);
+                startFadeInAnimation(categoryTile, 100 * rowNum);
+            } else {
+                // Question cell
+                ViewGroup questionTile = (ViewGroup) row.getChildAt(colIdx);
+                if (category.questions.size() > rowNum - 1)
+                    bindQuestionTile(category.questions.get(rowNum - 1), questionTile);
+                else {
+                    questionTile.setFocusable(false);
+                    questionTile.findViewById(R.id.dollarSign).setVisibility(View.INVISIBLE);
+                    questionTile.findViewById(R.id.value).setVisibility(View.INVISIBLE);
+                }
+                startFadeInAnimation(questionTile, 100 * rowNum);
+            }
+        }
+    }
+
+    private void startFadeInAnimation(View target, long delay) {
+        target.setAlpha(0f);
+        ObjectAnimator anim = ObjectAnimator.ofFloat(target, "alpha", 0f, 1f);
+        anim.setDuration(300);
+        anim.setStartDelay(delay);
+        anim.start();
     }
 
 }
