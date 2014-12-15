@@ -7,6 +7,9 @@ import android.app.Fragment;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.TextAppearanceSpan;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -68,11 +71,8 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
         View root = inflater.inflate(R.layout.fragment_game, container, false);
         ButterKnife.inject(this, root);
 
-        Typeface gameShowFont = Typeface.createFromAsset(getActivity().getAssets(), "fonts/gyparody.ttf");
+//        Typeface gameShowFont = Typeface.createFromAsset(getActivity().getAssets(), "fonts/gyparody.ttf");
         Typeface tileFont     = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Swiss_911_Extra_Compressed.ttf");
-
-        TextView headerTitle = ButterKnife.findById(root, R.id.header);
-        headerTitle.setTypeface(gameShowFont);
 
         List<Player> players = mGame.players;
 
@@ -83,11 +83,11 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
             setPlayerScoreOnTextView(player, playerButton);
             playerButton.setTypeface(tileFont);
             playerButton.setButtonDrawable(null);
-            playerButton.setTextSize(30);
-            playerButton.setTextColor(getResources().getColor(R.color.text_player_names));
-            playerButton.setPadding(8, 8, 8, 8);
+            playerButton.setTextSize(34);
+            playerButton.setTextColor(getResources().getColor(R.color.text_player_score));
+            playerButton.setPadding(8, 0, 8, 8);
             RadioGroup.LayoutParams params = new RadioGroup.LayoutParams(RadioGroup.LayoutParams.WRAP_CONTENT, RadioGroup.LayoutParams.WRAP_CONTENT);
-            params.setMargins(16, 0, 16, 0);
+            params.setMargins(16, 0, 16, 8);
             playerButton.setLayoutParams(params);
             mPlayerGroup.addView(playerButton);
         }
@@ -188,7 +188,13 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
     }
 
     private void setPlayerScoreOnTextView(Player player, TextView view) {
-        view.setText(String.format("%s: %d", player.name.toUpperCase(), player.score));
+        int startSpan = 0;
+        String text = String.format("%s %d", player.name.toUpperCase(), player.score);
+        int endSpan = player.name.length();
+        Spannable spanRange = new SpannableString(text);
+        TextAppearanceSpan tas = new TextAppearanceSpan(view.getContext(), R.style.PlayerNameText);
+        spanRange.setSpan(tas, startSpan, endSpan, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        view.setText(spanRange);
     }
 
     public interface GameListener {

@@ -1,6 +1,7 @@
 <resources>
     <color name="text_subdued">#ff8c8c8c</color>
     <color name="text_player_names">#ffb8b8b8</color>
+    <color name="text_player_score">#fffbfbfb</color>
     <color name="board_selected">#ff0300ff</color>
     <color name="board">#15137e</color>
     <color name="text_dollar">#d69f4c</color>

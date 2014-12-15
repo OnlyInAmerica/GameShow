@@ -8,37 +8,23 @@
     android:background="@android:color/black"
     tools:context="pro.dbro.gameshow.ui.fragments.GameFragment">
 
-    <TextView
-        android:id="@+id/header"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:paddingStart="2dp"
-        android:paddingBottom="16dp"
-        android:text="@string/jeoparty"
-        android:textColor="@color/text_subdued"
-        android:textSize="40sp" />
-
     <RadioGroup
         android:id="@+id/playerGroup"
-        android:layout_marginStart="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
-        android:layout_toEndOf="@id/header"
-        android:layout_above="@+id/tableLayout"
-        android:gravity="top"
+        android:gravity="top|center"
         android:orientation="horizontal"
         android:focusable="false"
         android:weightSum="4" />
 
     <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@id/tableLayout"
+        android:id="@+id/tableLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/header"
+        android:layout_below="@id/playerGroup"
         android:gravity="center">
 
     </TableLayout>
