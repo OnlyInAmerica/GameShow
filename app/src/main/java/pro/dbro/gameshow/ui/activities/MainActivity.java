@@ -131,7 +131,7 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
 
             }
         } else if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_B) {
-            finish();
+            showQuitDialog();
         }
         return false;
     }
@@ -250,10 +250,7 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
         builder.setPositiveButton(getString(R.string.play_again), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                mGameReady = false;
-                GameManager.reset();
-                createGame();
-                showChoosePlayerFragment();
+                startNewGame();
             }
         });
         builder.setNegativeButton(getString(R.string.quit), new DialogInterface.OnClickListener() {
@@ -264,5 +261,31 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
             }
         });
         builder.show();
+    }
+
+    private void startNewGame() {
+        mGameReady = false;
+        GameManager.reset();
+        createGame();
+        showChoosePlayerFragment();
+    }
+
+    private void showQuitDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Quit?")
+               .setPositiveButton("Quit", new DialogInterface.OnClickListener() {
+                   @Override
+                   public void onClick(DialogInterface dialog, int which) {
+                       dialog.dismiss();
+                       MainActivity.this.finish();
+                   }
+               })
+               .setNegativeButton("New Game", new DialogInterface.OnClickListener() {
+                   @Override
+                   public void onClick(DialogInterface dialog, int which) {
+                       startNewGame();
+                   }
+               })
+               .show();
     }
 }
