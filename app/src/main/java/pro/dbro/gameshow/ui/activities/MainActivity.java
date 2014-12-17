@@ -21,8 +21,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -93,6 +97,7 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
             @Override
             public void onRequestComplete(Game game) {
                 mGameReady = true;
+                if (mAddedPlayers) addGameFragment();
             }
         });
     }
@@ -103,9 +108,11 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
                 .replace(R.id.container, fragment, "choosePlayerFrag")
                 .commit();
 
-        mMusicHandler = new MusicHandler(this);
-        mMusicHandler.load(R.raw.theme, true);
-        mMusicHandler.play(MUSIC_FADE_DURATION);
+        if (mMusicHandler == null) {
+            mMusicHandler = new MusicHandler(this);
+            mMusicHandler.load(R.raw.theme, true);
+        }
+        if (!mMusicHandler.isPlaying()) mMusicHandler.play(MUSIC_FADE_DURATION);
     }
 
     @Override
@@ -187,19 +194,27 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
 
     @Override
     public void onPlayersSelected(List<Player> players) {
-        if (!mAddedPlayers) {
-            mGame.addPlayers(players);
-            mAddedPlayers = true;
-        }
+        if (mAddedPlayers) return;
+
+        mGame.addPlayers(players);
+        mAddedPlayers = true;
 
         if (mGameReady) {
-            mMusicHandler.stop(MUSIC_FADE_DURATION);
-            GameFragment fragment = GameFragment.newInstance(mGame);
-            getFragmentManager().beginTransaction()
-                    .replace(R.id.container, fragment, "gameFrag")
-                    .commit();
+            mMusicHandler.stop(0); // No fade. GameFragment will play board filling jingle
+            addGameFragment();
         } else {
-            Log.e(TAG, "Game not ready upon player selection");
+            Log.d(TAG, "Game not ready upon player selection. Will show board when game ready");
+            ProgressBar bar = new ProgressBar(this);
+            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                                                                           ViewGroup.LayoutParams.WRAP_CONTENT);
+            // TODO : Don't use pixel values though 1920x1080 is probably the screen res
+            params.width = 100;
+            params.height = 100;
+            params.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+            params.setMargins(0, 0, 0, 100);
+            bar.setLayoutParams(params);
+            bar.setIndeterminate(true);
+            ((ViewGroup) findViewById(R.id.container)).addView(bar);
         }
     }
 
@@ -287,5 +302,12 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
                    }
                })
                .show();
+    }
+
+    private void addGameFragment() {
+        GameFragment fragment = GameFragment.newInstance(mGame);
+        getFragmentManager().beginTransaction()
+                .replace(R.id.container, fragment, "gameFrag")
+                .commit();
     }
 }
