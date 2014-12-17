@@ -108,7 +108,8 @@ public class IntegrationTest extends ActivityInstrumentationTestCase2<MainActivi
         // Answer every question
         int numDailyDoubles = 0;
         int numQuestions = mainActivity.mGame.countQuestions();
-        sendKeys(KeyEvent.KEYCODE_DPAD_RIGHT); // Select first question
+        sendKeys(KeyEvent.KEYCODE_DPAD_RIGHT);
+        sendKeys(KeyEvent.KEYCODE_DPAD_DOWN); // Select first question
         for(int x = 0; x < numQuestions; x++) {
 
             Instrumentation.ActivityMonitor questionActivityMonitor =
