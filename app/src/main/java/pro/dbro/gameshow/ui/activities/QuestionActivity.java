@@ -163,7 +163,7 @@ public class QuestionActivity extends Activity {
     }
 
     private void presentWagerSelection() {
-        promptView.setText(String.format("What's your Wager? (Max : %d)", game.getMaxDailyDoubleWagerForPlayer(game.getCurrentPlayer())));
+        promptView.setText(String.format("What's your Wager?\nMax : %d", game.getMaxDailyDoubleWagerForPlayer(game.getCurrentPlayer())));
         singleActionBtn.setText("Speak Wager");
     }
 
