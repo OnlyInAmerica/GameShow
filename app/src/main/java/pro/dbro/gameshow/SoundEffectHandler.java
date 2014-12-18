@@ -48,6 +48,8 @@ public class SoundEffectHandler {
     }
 
     public void playSound(SoundType type) {
+        if (mPool == null) return;
+        
         mPool.play(type.poolId, mVolume, mVolume, 1, 0, 1);
     }
 
