@@ -18,6 +18,7 @@ public class MusicHandler {
     private MediaPlayer mediaPlayer;
     private Context context;
     private int iVolume;
+    private boolean isPlaying;
 
     private final static int INT_VOLUME_MAX = 100;
     private final static int INT_VOLUME_MIN = 0;
@@ -39,6 +40,7 @@ public class MusicHandler {
     }
 
     public void play(int fadeDuration) {
+        isPlaying = true;
         //Set current volume, depending on fade or not
         if (fadeDuration > 0)
             iVolume = INT_VOLUME_MIN;
@@ -73,6 +75,7 @@ public class MusicHandler {
     }
 
     public void pause(int fadeDuration) {
+        isPlaying = false;
         //Set current volume, depending on fade or not
         if (fadeDuration > 0)
             iVolume = INT_VOLUME_MAX;
@@ -127,6 +130,7 @@ public class MusicHandler {
     }
 
     public void stop(int fadeDuration) {
+        isPlaying = false;
         try {
             // Set current volume, depending on fade or not
             if (fadeDuration > 0)
@@ -166,6 +170,7 @@ public class MusicHandler {
     }
 
     public void stopAndRelease(int fadeDuration) {
+        isPlaying = false;
         try {
             final Timer timer = new Timer(true);
             TimerTask timerTask = new TimerTask() {
@@ -189,7 +194,7 @@ public class MusicHandler {
     }
 
     public boolean isPlaying() {
-        return mediaPlayer != null && mediaPlayer.isPlaying();
+        return isPlaying;
     }
 
     public void release() {
