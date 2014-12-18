@@ -266,6 +266,7 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
 
         questionTile.findViewById(R.id.dollarSign).setVisibility(View.VISIBLE);
         questionTile.findViewById(R.id.value).setVisibility(View.VISIBLE);
+        questionTile.setFocusable(true);
     }
 
     private void bindCategoryTile(Category category, TextView categoryTile) {
@@ -273,7 +274,7 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
         categoryTile.setTag(category);
     }
 
-    public void rebindCategoryViews(Category category) {
+    public void populateCategory(Category category) {
         int colIdx = mGame.categories.indexOf(category);
 
         int numRows = mTable.getChildCount();

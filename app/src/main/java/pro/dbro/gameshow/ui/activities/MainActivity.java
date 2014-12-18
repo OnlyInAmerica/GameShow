@@ -26,7 +26,6 @@ import android.view.KeyEvent;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -131,7 +130,7 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
                     @Override
                     public void onRequestComplete(Game game) {
                         ((GameFragment) getFragmentManager().findFragmentByTag("gameFrag"))
-                                .rebindCategoryViews(game.categories.get(changedCategoryIdx));
+                                .populateCategory(game.categories.get(changedCategoryIdx));
                     }
                 });
                 return true;
