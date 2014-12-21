@@ -131,7 +131,8 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
                                    QuestionResult result,
                                    int wager) {
 
-        mGame.markQuestionAnswered((pro.dbro.gameshow.model.Question) questionTile.getTag());
+        Question answeredQuestion = (Question) questionTile.getTag();
+        mGame.markQuestionAnswered(answeredQuestion);
         if (mGame.getNumQuestionsAnswered() == 1) makeCategoriesNotFocusable();
         questionTile.setFocusable(false);
         questionTile.findViewById(R.id.value).setVisibility(View.INVISIBLE);
@@ -144,12 +145,11 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
                 incrementPlayerScore(answeringPlayer, wager);
                 setCurrentPlayer(answeringPlayer);
                 break;
+            case NO_RESPONSE:
+                if (!answeredQuestion.isDailyDouble) break;
             case INCORRECT:
                 incrementPlayerScore(answeringPlayer, -wager);
                 advanceCurrentPlayerIgnoring(answeringPlayer);
-                break;
-            case NO_RESPONSE:
-                // Do nothing
                 break;
         }
 
