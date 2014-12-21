@@ -10,6 +10,8 @@ import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
+import android.os.Message;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.util.Log;
@@ -40,11 +42,15 @@ import pro.dbro.gameshow.model.Game;
 import pro.dbro.gameshow.model.Player;
 import pro.dbro.gameshow.model.Question;
 
-
+// TODO : Race condition on question timer completion and speak answer selection
 public class QuestionActivity extends Activity {
     public final String TAG = this.getClass().getSimpleName();
 
     public static String INTENT_ACTION = "pro.dbro.gameshow.QuestionResult";
+
+    /** Handler codes */
+    public static final int ANSWER_QUESTION = 0;
+    public static final int TIMER           = 1;
 
     /** Intent result codes */
     public static final int NO_RESPONSE = 2;
@@ -75,6 +81,11 @@ public class QuestionActivity extends Activity {
     private Player answeringPlayer;
     private Question question;
     private State state;
+    private SoundEffectHandler mSoundFxHandler;
+    private CountDownTimer mCountdownTimer;
+    private SpeechRecognizer mSpeechRecognizer;
+    private Handler mHandler;
+
     private int wager;
 
     @InjectView(R.id.prompt)
@@ -95,10 +106,6 @@ public class QuestionActivity extends Activity {
     @InjectView(R.id.dailyDouble)
     ImageView dailyDouble;
 
-    private SoundEffectHandler mSoundFxHandler;
-    private CountDownTimer mCountdownTimer;
-    private SpeechRecognizer mSpeechRecognizer;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -117,7 +124,9 @@ public class QuestionActivity extends Activity {
 
         mSoundFxHandler = SoundEffectHandler.getInstance(this);
         if (question.isDailyDouble) mSoundFxHandler.playSound(SoundEffectHandler.SoundType.DAILY_DOUBLE);
-            prepareSpeechRecognizer();
+
+        prepareSpeechRecognizer();
+        setupHandler();
     }
 
     @Override
@@ -144,6 +153,23 @@ public class QuestionActivity extends Activity {
             startQuestionTimer();
         }
         super.onResume();
+    }
+
+    private void setupHandler() {
+        mHandler = new Handler() {
+
+            public void handleMessage(Message msg) {
+                switch(msg.what) {
+                    case ANSWER_QUESTION:
+                        _handleSpeakAnswerRequest();
+                        break;
+
+                    case TIMER:
+                        _handleTimerExpired();
+                        break;
+                }
+            }
+        };
     }
 
     private void presentQuestion() {
@@ -265,16 +291,24 @@ public class QuestionActivity extends Activity {
             }
 
             public void onFinish() {
-                if (state == State.WILL_SELECT_ANSWER || state == State.WILL_SPEAK_ANSWER) {
-                    if (mSoundFxHandler != null) mSoundFxHandler.playSound(SoundEffectHandler.SoundType.OUT_OF_TIME);
-                    promptView.setText(question.getAnswer());
-                    state = State.OUT_OF_TIME;
-                    choiceContainer.setVisibility(View.GONE);
-                    singleActionBtn.setVisibility(View.VISIBLE);
-                    singleActionBtn.setText(getString(R.string.continue_on));
-                }
+                handleTimerExpired();
             }
         }.start();
+    }
+
+    private void handleTimerExpired() {
+        mHandler.sendMessage(mHandler.obtainMessage(TIMER));
+    }
+
+    private void _handleTimerExpired() {
+        if (state == State.WILL_SELECT_ANSWER || state == State.WILL_SPEAK_ANSWER) {
+            if (mSoundFxHandler != null) mSoundFxHandler.playSound(SoundEffectHandler.SoundType.OUT_OF_TIME);
+            promptView.setText(question.getAnswer());
+            state = State.OUT_OF_TIME;
+            choiceContainer.setVisibility(View.GONE);
+            singleActionBtn.setVisibility(View.VISIBLE);
+            singleActionBtn.setText(getString(R.string.continue_on));
+        }
     }
 
     private void startSpeechRecognitionTimeoutTimer() {
@@ -322,14 +356,22 @@ public class QuestionActivity extends Activity {
                 return;
 
             case WILL_SPEAK_ANSWER:
-                state = State.SPEAKING_ANSWER;
-                mCountdownTimer.cancel();
-                timerBar.setVisibility(View.INVISIBLE);
-                singleActionBtn.setText(getString(R.string.listening));
-                startSpeechRecognizer();
-                startSpeechRecognitionTimeoutTimer();
+                handleSpeakAnswerRequest();
                 break;
         }
+    }
+
+    private void handleSpeakAnswerRequest() {
+        mHandler.sendMessage(mHandler.obtainMessage(ANSWER_QUESTION));
+    }
+
+    private void _handleSpeakAnswerRequest() {
+        state = State.SPEAKING_ANSWER;
+        mCountdownTimer.cancel();
+        timerBar.setVisibility(View.INVISIBLE);
+        singleActionBtn.setText(getString(R.string.listening));
+        startSpeechRecognizer();
+        startSpeechRecognitionTimeoutTimer();
     }
 
     private void handleSpeechRecognized(String recognizedSpeech) {
