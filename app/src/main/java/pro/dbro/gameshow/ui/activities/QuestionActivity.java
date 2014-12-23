@@ -87,6 +87,9 @@ public class QuestionActivity extends Activity {
     private Handler mHandler;
 
     private int wager;
+    private long timerExpireTime;
+    /* Don't allow finishing within this period after timer expiry */
+    private final int OUT_OF_TIME_COOLDOWN = 1000;
 
     @InjectView(R.id.prompt)
     TextView promptView;
@@ -308,6 +311,7 @@ public class QuestionActivity extends Activity {
             choiceContainer.setVisibility(View.GONE);
             singleActionBtn.setVisibility(View.VISIBLE);
             singleActionBtn.setText(getString(R.string.continue_on));
+            timerExpireTime = System.currentTimeMillis();
         }
     }
 
@@ -349,7 +353,8 @@ public class QuestionActivity extends Activity {
 
                 return;
             case OUT_OF_TIME:
-                finishWithQuestionResult(NO_RESPONSE);
+                if (System.currentTimeMillis() - timerExpireTime < OUT_OF_TIME_COOLDOWN)
+                    finishWithQuestionResult(NO_RESPONSE);
                 return;
 
             case SPEAKING_ANSWER:
