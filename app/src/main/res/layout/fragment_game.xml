@@ -2,9 +2,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="18dp"
-    android:paddingLeft="28dp"
-    android:paddingRight="28dp"
+    android:padding="@dimen/gameboard_vertical_margin"
+    android:paddingLeft="@dimen/gameboard_horizontal_margin"
+    android:paddingRight="@dimen/gameboard_horizontal_margin"
     android:background="@android:color/black"
     tools:context="pro.dbro.gameshow.ui.fragments.GameFragment">
 

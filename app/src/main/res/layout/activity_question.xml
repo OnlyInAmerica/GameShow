@@ -53,7 +53,7 @@
             android:padding="16dp"
             android:text="@string/speak_answer"
             android:textSize="20sp"
-            android:visibility="gone" />
+            android:visibility="invisible" />
 
         <LinearLayout
             android:id="@+id/choiceContainer"
@@ -75,7 +75,8 @@
                 android:focusable="true"
                 android:gravity="center"
                 android:padding="16dp"
-                android:textSize="20sp" />
+                android:textSize="@dimen/font_question_choice"
+                android:ellipsize="marquee"/>
 
             <Button
                 android:id="@+id/choice2"
@@ -87,7 +88,8 @@
                 android:focusable="true"
                 android:gravity="center"
                 android:padding="16dp"
-                android:textSize="20sp" />
+                android:textSize="@dimen/font_question_choice"
+                android:ellipsize="marquee"/>
 
             <Button
                 android:id="@+id/choice3"
@@ -99,7 +101,8 @@
                 android:focusable="true"
                 android:gravity="center"
                 android:padding="16dp"
-                android:textSize="20sp" />
+                android:textSize="@dimen/font_question_choice"
+                android:ellipsize="marquee"/>
 
             <Button
                 android:id="@+id/choice4"
@@ -111,7 +114,8 @@
                 android:focusable="true"
                 android:gravity="center"
                 android:padding="16dp"
-                android:textSize="20sp" />
+                android:textSize="@dimen/font_question_choice"
+                android:ellipsize="marquee"/>
 
         </LinearLayout>
     </RelativeLayout>

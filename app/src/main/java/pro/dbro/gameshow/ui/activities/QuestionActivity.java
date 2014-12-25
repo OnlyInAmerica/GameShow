@@ -42,7 +42,6 @@ import pro.dbro.gameshow.model.Game;
 import pro.dbro.gameshow.model.Player;
 import pro.dbro.gameshow.model.Question;
 
-// TODO : Race condition on question timer completion and speak answer selection
 public class QuestionActivity extends Activity {
     public final String TAG = this.getClass().getSimpleName();
 
@@ -137,7 +136,7 @@ public class QuestionActivity extends Activity {
         if (question.isDailyDouble) {
             state = State.WILL_SPEAK_WAGER;
             dailyDouble.setVisibility(View.VISIBLE);
-            choiceContainer.setVisibility(View.GONE);
+            choiceContainer.setVisibility(View.INVISIBLE);
             singleActionBtn.setVisibility(View.VISIBLE);
             presentWagerSelection();
             ActivitySwitcher.animationIn(findViewById(R.id.topContainer), getWindowManager(), new ActivitySwitcher.AnimationFinishedListener() {
@@ -180,12 +179,12 @@ public class QuestionActivity extends Activity {
         if (question.choices.size() > 1) {
             state = State.WILL_SELECT_ANSWER;
             for (int x = 0; x < question.choices.size(); x++) {
-                choiceViews.get(x).setText(question.getAnswer());
+                choiceViews.get(x).setText(question.choices.get(x));
                 choiceViews.get(x).setTag(x);
             }
         } else {
             state = State.WILL_SPEAK_ANSWER;
-            choiceContainer.setVisibility(View.GONE);
+            choiceContainer.setVisibility(View.INVISIBLE);
             singleActionBtn.setVisibility(View.VISIBLE);
             singleActionBtn.setText(getString(R.string.speak_answer));
         }
@@ -208,7 +207,7 @@ public class QuestionActivity extends Activity {
                 choiceViews.get(x).setTag(game.players.get(x));
             } else {
                 choiceViews.get(x).setFocusable(false);
-                choiceViews.get(x).setVisibility(View.GONE);
+                choiceViews.get(x).setVisibility(View.INVISIBLE);
                 choiceViews.get(x).setText("");
             }
         }
@@ -247,7 +246,6 @@ public class QuestionActivity extends Activity {
             public void onError(int error) {
                 Log.w(TAG, "Speech recognition error: " + error);
                 handleSpeechRecognized("?");
-//                handleSpokenAnswer("?", question.getAnswer());
             }
 
             @Override
@@ -260,7 +258,6 @@ public class QuestionActivity extends Activity {
     private void startSpeechRecognizer() {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, "voice.recognition.test");
 
         mSpeechRecognizer.startListening(intent);
     }
@@ -308,7 +305,7 @@ public class QuestionActivity extends Activity {
             if (mSoundFxHandler != null) mSoundFxHandler.playSound(SoundEffectHandler.SoundType.OUT_OF_TIME);
             promptView.setText(question.getAnswer());
             state = State.OUT_OF_TIME;
-            choiceContainer.setVisibility(View.GONE);
+            choiceContainer.setVisibility(View.INVISIBLE);
             singleActionBtn.setVisibility(View.VISIBLE);
             singleActionBtn.setText(getString(R.string.continue_on));
             timerExpireTime = System.currentTimeMillis();
@@ -353,7 +350,7 @@ public class QuestionActivity extends Activity {
 
                 return;
             case OUT_OF_TIME:
-                if (System.currentTimeMillis() - timerExpireTime < OUT_OF_TIME_COOLDOWN)
+                if (System.currentTimeMillis() - timerExpireTime > OUT_OF_TIME_COOLDOWN)
                     finishWithQuestionResult(NO_RESPONSE);
                 return;
 

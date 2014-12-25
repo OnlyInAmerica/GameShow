@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="AppTheme" parent="@style/Theme.Leanback">
+    <style name="TvTheme" parent="@style/Theme.Leanback">
         <item name="android:windowContentTransitions">true</item>
 
         <!-- Main theme colors -->
@@ -13,7 +13,7 @@
         <item name="android:colorAccent">@color/text_dollar</item>
     </style>
 
-    <style name="Transparent" parent="AppTheme">
+    <style name="Transparent" parent="TvTheme">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentOverlay">@null</item>
@@ -22,7 +22,7 @@
     </style>
 
     <style name="PlayerNameText">
-        <item name="android:textSize">24sp</item>
+        <item name="android:textSize">@dimen/font_player</item>
         <item name="android:textStyle">normal</item>
         <item name="android:textColor">@color/text_player_names</item>
     </style>

@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:focusable="true"
     android:background="@drawable/tile_bg"
+    android:clickable="true"
     android:gravity="center">
 
     <TextView
@@ -16,7 +17,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:textSize="50sp"
+        android:textSize="@dimen/font_question_value"
         android:gravity="center" />
 
     <TextView
@@ -31,7 +32,7 @@
         android:layout_height="wrap_content"
         android:layout_toStartOf="@id/value"
         android:text="@string/dollar_sign"
-        android:textSize="42sp"
+        android:textSize="@dimen/font_question_$"
         android:layout_centerVertical="true" />
 
 </RelativeLayout>

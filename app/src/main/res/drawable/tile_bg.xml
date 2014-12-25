@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/tile_pressed" android:state_pressed="true" >
+        <set>
+            <objectAnimator android:propertyName="translationZ"
+                android:duration="@android:integer/config_shortAnimTime"
+                android:valueTo="2dp"
+                android:valueType="floatType"/>
+            <!-- you could have other objectAnimator elements
+                 here for "x" and "y", or other properties -->
+        </set>
+    </item>
     <item android:drawable="@drawable/tile_pressed" android:state_focused="true" >
         <set>
             <objectAnimator android:propertyName="translationZ"

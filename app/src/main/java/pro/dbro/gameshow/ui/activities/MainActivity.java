@@ -19,14 +19,22 @@ import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
+import com.google.gson.Gson;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.List;
 
 import pro.dbro.gameshow.GameManager;
@@ -80,11 +88,12 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
 //        try {
 //            AssetManager assetManager = getAssets();
 //            InputStream ims = null;
-//            ims = assetManager.open("games/thxgiving.json");
+//            ims = assetManager.open("games/default.json");
 //            Gson gson = new Gson();
 //            Reader reader = new InputStreamReader(ims);
 //            Game game = gson.fromJson(reader, Game.class);
 //            GameManager.setGame(game);
+//            mGameReady = true;
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
@@ -116,36 +125,16 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if ( (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_A) && getCurrentFocus() != null) {
-
-            if (getCurrentFocus() instanceof ViewGroup) {
-
-                showQuestionActivityForQuestionView((ViewGroup) getCurrentFocus());
-                return true;
-
-            } else if (getCurrentFocus().getTag() instanceof Category) {
-                Category oldCategory = (Category) getCurrentFocus().getTag();
-                final int changedCategoryIdx = mGame.categories.indexOf(oldCategory);
-                mClient.replaceGameCategory(mGame, oldCategory, new JeopardyClient.RequestCallback() {
-                    @Override
-                    public void onRequestComplete(Game game) {
-                        ((GameFragment) getFragmentManager().findFragmentByTag("gameFrag"))
-                                .populateCategory(game.categories.get(changedCategoryIdx));
-                    }
-                });
-                return true;
-
-            }
-        } else if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_B) {
+        if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_B) {
             showQuitDialog();
+            return true;
         }
         return false;
     }
 
     /** Public for testing */
-    public void showQuestionActivityForQuestionView(ViewGroup questionTile) {
-        Question question = (Question) questionTile.getTag();
-
+    public void showQuestionActivityForQuestionView(ViewGroup questionTile,
+                                                    Question question) {
         questionTile.setTransitionName("sharedValue");
         Intent intent = new Intent(this, QuestionActivity.class);
         intent.putExtra("question", question);
@@ -275,6 +264,30 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
             }
         });
         builder.show();
+    }
+
+    @Override
+    public void onQuestionSelected(ViewGroup tile, Question question) {
+        showQuestionActivityForQuestionView(tile, question);
+    }
+
+    @Override
+    public void onCategorySelected(Category category) {
+        replaceCategory(category);
+    }
+
+    private void replaceCategory(Category toReplace) {
+        final int changedCategoryIdx = mGame.categories.indexOf(toReplace);
+        mClient.replaceGameCategory(mGame, toReplace, new JeopardyClient.RequestCallback() {
+            @Override
+            public void onRequestComplete(Game game) {
+                getGameFragment().populateCategory(game.categories.get(changedCategoryIdx));
+            }
+        });
+    }
+
+    private GameFragment getGameFragment() {
+        return ((GameFragment) getFragmentManager().findFragmentByTag("gameFrag"));
     }
 
     private void startNewGame() {

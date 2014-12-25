@@ -12,5 +12,6 @@
     android:shadowDy="4"
     android:shadowRadius="1"
     android:textColor="@android:color/white"
-    android:textSize="30sp"
-    android:focusable="true"/>
+    android:textSize="@dimen/font_category"
+    android:focusable="true"
+    android:clickable="true"/>

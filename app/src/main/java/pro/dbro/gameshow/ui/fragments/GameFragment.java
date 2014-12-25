@@ -74,11 +74,12 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
 //        Typeface gameShowFont = Typeface.createFromAsset(getActivity().getAssets(), "fonts/gyparody.ttf");
         Typeface tileFont     = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Swiss_911_Extra_Compressed.ttf");
 
-        List<Player> players = mGame.players;
+        List<Player> players = mGame.players; // NPE on restart
 
         for (Player player : players) {
             RadioButton playerButton = new RadioButton(getActivity());
             playerButton.setFocusable(false);
+            playerButton.setClickable(false);
             playerButton.setBackgroundResource(R.drawable.player_bg);
             setPlayerScoreOnTextView(player, playerButton);
             playerButton.setTypeface(tileFont);
@@ -135,6 +136,7 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
         mGame.markQuestionAnswered(answeredQuestion);
         if (mGame.getNumQuestionsAnswered() == 1) makeCategoriesNotFocusable();
         questionTile.setFocusable(false);
+        questionTile.setClickable(false);
         questionTile.findViewById(R.id.value).setVisibility(View.INVISIBLE);
         questionTile.findViewById(R.id.dollarSign).setVisibility(View.INVISIBLE);
 
@@ -199,6 +201,8 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
 
     public interface GameListener {
         public void onGameComplete(List<Player> winners);
+        public void onQuestionSelected(ViewGroup tile, Question question);
+        public void onCategorySelected(Category category);
     }
 
     private void makeCategoriesNotFocusable() {
@@ -206,6 +210,7 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
 
         for(int colNum = 0; colNum < firstRow.getChildCount(); colNum++) {
             firstRow.getChildAt(colNum).setFocusable(false);
+            firstRow.getChildAt(colNum).setClickable(false);
         }
     }
 
@@ -249,6 +254,7 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
                         startFadeInAnimation(questionTile, (long) (3400 * Math.random()));
                     } else {
                         questionTile.setFocusable(false);
+                        questionTile.setClickable(false);
                         questionTile.findViewById(R.id.dollarSign).setVisibility(View.INVISIBLE);
                     }
                     ((TextView) questionTile.findViewById(R.id.value)).setTypeface(tileFont);
@@ -267,11 +273,16 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
         questionTile.findViewById(R.id.dollarSign).setVisibility(View.VISIBLE);
         questionTile.findViewById(R.id.value).setVisibility(View.VISIBLE);
         questionTile.setFocusable(true);
+        questionTile.setClickable(true);
+
+        questionTile.setOnClickListener(questionClickListener);
     }
 
     private void bindCategoryTile(Category category, TextView categoryTile) {
         categoryTile.setText(category.title.toUpperCase());
         categoryTile.setTag(category);
+
+        categoryTile.setOnClickListener(categoryClickListener);
     }
 
     public void populateCategory(Category category) {
@@ -294,6 +305,7 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
                     bindQuestionTile(category.questions.get(rowNum - 1), questionTile);
                 else {
                     questionTile.setFocusable(false);
+                    questionTile.setClickable(false);
                     questionTile.findViewById(R.id.dollarSign).setVisibility(View.INVISIBLE);
                     questionTile.findViewById(R.id.value).setVisibility(View.INVISIBLE);
                 }
@@ -309,5 +321,21 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
         anim.setStartDelay(delay);
         anim.start();
     }
+
+    private View.OnClickListener questionClickListener = new View.OnClickListener() {
+
+        @Override
+        public void onClick(View v) {
+            mListener.onQuestionSelected((ViewGroup) v, (Question) v.getTag());
+        }
+    };
+
+    private View.OnClickListener categoryClickListener = new View.OnClickListener() {
+
+        @Override
+        public void onClick(View v) {
+            mListener.onCategorySelected((Category) v.getTag());
+        }
+    };
 
 }
