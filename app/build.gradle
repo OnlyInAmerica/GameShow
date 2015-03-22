@@ -2,13 +2,13 @@ apply plugin: 'com.android.application'
 
 
 android {
-    compileSdkVersion 'Google Inc.:Google APIs:21'
-    buildToolsVersion "21.1.1"
+    compileSdkVersion 'Google Inc.:Google APIs:22'
+    buildToolsVersion "22.0.1"
 
     defaultConfig {
         applicationId "pro.dbro.gameshow"
         minSdkVersion 21
-        targetSdkVersion 21
+        targetSdkVersion 22
         versionCode 10
         versionName "1.3.1"
     }
@@ -48,19 +48,18 @@ android {
 }
 
 dependencies {
-    androidTestCompile ('com.jakewharton.espresso:espresso:1.1-r3') {
-        exclude group: 'javax.annotation'
-    }
-    androidTestCompile 'com.squareup.spoon:spoon-maven-plugin:1.1.2'
-
+//    androidTestCompile 'com.squareup.spoon:spoon-maven-plugin:1.1.2'
+    compile 'com.jakewharton.timber:timber:2.7.1'
     compile 'org.apache.airavata:airavata-levenshtein-distance-service:0.11'
     compile 'com.jakewharton:butterknife:6.0.0'
     compile 'com.koushikdutta.ion:ion:2.0.1'
     compile 'com.google.code.gson:gson:2.3.1'
     compile 'com.android.support:recyclerview-v7:21.0.2'
     compile 'com.android.support:leanback-v17:21.0.2'
-    compile 'com.android.support:appcompat-v7:21.0.2'
+//    compile 'com.android.support:appcompat-v7:21.0.3'
     compile 'com.squareup.picasso:picasso:2.3.2'
     compile 'com.android.support:cardview-v7:21.0.0'
+
+    compile project(':submodules:AirShare-Android:sdk')
 }
 

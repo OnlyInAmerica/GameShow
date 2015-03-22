@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">GameShowRemote</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- WelcomeFragment -->
+    <string name="hello">hello</string>
+    <string name="user_alias_hint">My Name</string>
+    <string name="choose_a_name">Choose a name</string>
+    <string name="not_connected">Not Connected</string>
+    <string name="connected">Connected</string>
+
+</resources>

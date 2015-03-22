@@ -1,0 +1,3 @@
+[submodule "submodules/AirShare-Android"]
+	path = submodules/AirShare-Android
+	url = https://github.com/OnlyInAmerica/AirShare-Android.git

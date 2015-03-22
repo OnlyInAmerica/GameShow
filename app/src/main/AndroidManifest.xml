@@ -20,6 +20,7 @@
 
     <application
         android:allowBackup="true"
+        android:name=".App"
         android:icon="@drawable/ic_launcher"
         android:banner="@drawable/ic_launcher"
         android:label="@string/app_name"
@@ -42,6 +43,9 @@
             android:configChanges="keyboard|keyboardHidden|navigation"
             android:theme="@style/Transparent">
         </activity>
+
+        <service android:name="pro.dbro.airshare.app.AirShareService"/>
+
     </application>
 
 </manifest>

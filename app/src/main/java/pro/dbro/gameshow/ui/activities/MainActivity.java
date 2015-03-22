@@ -28,6 +28,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 
@@ -37,6 +38,12 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.List;
 
+import pro.dbro.airshare.app.AirShareService;
+import pro.dbro.airshare.app.IncomingTransfer;
+import pro.dbro.airshare.app.OutgoingTransfer;
+import pro.dbro.airshare.app.ui.AirShareActivity;
+import pro.dbro.airshare.session.Peer;
+import pro.dbro.airshare.transport.Transport;
 import pro.dbro.gameshow.GameManager;
 import pro.dbro.gameshow.JeopardyClient;
 import pro.dbro.gameshow.MusicHandler;
@@ -49,11 +56,16 @@ import pro.dbro.gameshow.model.Question;
 import pro.dbro.gameshow.ui.QuestionAnsweredListener;
 import pro.dbro.gameshow.ui.fragments.ChoosePlayerFragment;
 import pro.dbro.gameshow.ui.fragments.GameFragment;
+import timber.log.Timber;
 
 /*
  * MainActivity class that loads MainFragment
  */
-public class MainActivity extends Activity implements ChoosePlayerFragment.OnPlayersSelectedListener, GameFragment.GameListener {
+public class MainActivity extends AirShareActivity implements ChoosePlayerFragment.OnPlayersSelectedListener,
+                                                              GameFragment.GameListener,
+                                                              AirShareActivity.AirShareCallback,
+                                                              AirShareService.AirShareReceiverCallback,
+                                                              AirShareService.AirShareSenderCallback, AirShareService.AirSharePeerCallback {
 
     private String TAG = getClass().getSimpleName();
 
@@ -70,10 +82,13 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
     MusicHandler mMusicHandler;
     private final int MUSIC_FADE_DURATION = 4 * 1000;
 
+    AirShareService.ServiceBinder serviceBinder;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setAirShareCallback(this);
 
         createGame();
         showChoosePlayerFragment();
@@ -321,5 +336,58 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
         getFragmentManager().beginTransaction()
                 .replace(R.id.container, fragment, "gameFrag")
                 .commit();
+    }
+
+    @Override
+    public void registrationRequired() {
+        registerUserForService("Host", "Jeoparty");
+    }
+
+    @Override
+    public void onServiceReady(AirShareService.ServiceBinder serviceBinder) {
+        Timber.d("service ready. advertising");
+        this.serviceBinder = serviceBinder;
+        this.serviceBinder.advertiseLocalUser();
+
+        this.serviceBinder.setReceiverCallback(this);
+        this.serviceBinder.setSenderCallback(this);
+        this.serviceBinder.setPeerCallback(this);
+    }
+
+    @Override
+    public void onTransferOffered(IncomingTransfer transfer, Peer sender) {
+
+    }
+
+    @Override
+    public void onTransferProgress(IncomingTransfer transfer, Peer sender, float progress) {
+
+    }
+
+    @Override
+    public void onTransferComplete(IncomingTransfer transfer, Peer sender, Exception exception) {
+        String data = new String(transfer.getBodyBytes());
+        Timber.d("Got button press: " + data);
+        Toast.makeText(this, "Got data " + data, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onTransferOfferResponse(OutgoingTransfer transfer, Peer recipient, boolean recipientDidAccept) {
+
+    }
+
+    @Override
+    public void onTransferProgress(OutgoingTransfer transfer, Peer recipient, float progress) {
+
+    }
+
+    @Override
+    public void onTransferComplete(OutgoingTransfer transfer, Peer recipient, Exception exception) {
+
+    }
+
+    @Override
+    public void peerStatusUpdated(Peer peer, Transport.ConnectionStatus newStatus) {
+        Toast.makeText(this, peer.getAlias() + " " + newStatus.toString(), Toast.LENGTH_LONG).show();
     }
 }
