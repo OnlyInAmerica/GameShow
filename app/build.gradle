@@ -6,7 +6,7 @@ android {
     buildToolsVersion "23.0.3"
 
     defaultConfig {
-        applicationId "pro.dbro.gameshow"
+        applicationId "pro.dbro.gameshow2"
         minSdkVersion 21
         targetSdkVersion 23
         versionCode 11
