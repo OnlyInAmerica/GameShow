@@ -281,7 +281,9 @@ public class MainActivity extends Activity implements ChoosePlayerFragment.OnPla
         mClient.replaceGameCategory(mGame, toReplace, new JeopardyClient.RequestCallback() {
             @Override
             public void onRequestComplete(Game game) {
-                getGameFragment().populateCategory(game.categories.get(changedCategoryIdx));
+                Category newCategory = game.categories.get(changedCategoryIdx);
+                getGameFragment().populateCategory(newCategory);
+                findViewById(R.id.container).announceForAccessibility("Replaced with new category " + newCategory.title);
             }
         });
     }

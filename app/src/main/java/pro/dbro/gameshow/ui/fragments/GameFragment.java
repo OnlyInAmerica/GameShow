@@ -37,6 +37,8 @@ import pro.dbro.gameshow.ui.QuestionAnsweredListener;
 public class GameFragment extends Fragment implements QuestionAnsweredListener {
     private String TAG = getClass().getSimpleName();
 
+    private static final String ARG_GAME = "game";
+
     private Game mGame;
     private SoundEffectHandler mSoundFxHandler;
 
@@ -46,19 +48,16 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
     private GameListener mListener;
 
     public static GameFragment newInstance(Game game) {
-        GameFragment fragment = new GameFragment(game);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(ARG_GAME, game);
+        GameFragment fragment = new GameFragment();
+        fragment.setArguments(bundle);
         Log.d("GameFragment", String.format("Creating GameFragment for game with %d players", game.players.size()));
         return fragment;
     }
 
     public GameFragment() {
         // Required empty public constructor
-    }
-
-    @SuppressLint("ValidFragment")
-    public GameFragment(Game mGame) {
-        super();
-        this.mGame = mGame;
     }
 
     @Override
@@ -72,7 +71,7 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
         ButterKnife.inject(this, root);
 
 //        Typeface gameShowFont = Typeface.createFromAsset(getActivity().getAssets(), "fonts/gyparody.ttf");
-        Typeface tileFont     = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Swiss_911_Extra_Compressed.ttf");
+        Typeface tileFont = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Swiss_911_Extra_Compressed.ttf");
 
         List<Player> players = mGame.players; // NPE on restart
 
@@ -100,6 +99,13 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putSerializable(ARG_GAME, mGame);
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.reset(this);
@@ -112,12 +118,15 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+        getActivity().setTitle("Gameboard");
         try {
             mListener = (GameListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+
+        mGame = (Game) getArguments().getSerializable(ARG_GAME);
     }
 
     @Override
@@ -192,6 +201,7 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
     private void setPlayerScoreOnTextView(Player player, TextView view) {
         int startSpan = 0;
         String text = String.format("%s %d", player.name.toUpperCase(), player.score);
+        view.announceForAccessibility("Player " + player.name + " score now " + player.score);
         int endSpan = player.name.length();
         Spannable spanRange = new SpannableString(text);
         TextAppearanceSpan tas = new TextAppearanceSpan(view.getContext(), R.style.PlayerNameText);
@@ -201,21 +211,24 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
 
     public interface GameListener {
         public void onGameComplete(List<Player> winners);
+
         public void onQuestionSelected(ViewGroup tile, Question question);
+
         public void onCategorySelected(Category category);
     }
 
     private void makeCategoriesNotFocusable() {
         TableRow firstRow = (TableRow) mTable.getChildAt(0);
 
-        for(int colNum = 0; colNum < firstRow.getChildCount(); colNum++) {
+        for (int colNum = 0; colNum < firstRow.getChildCount(); colNum++) {
             firstRow.getChildAt(colNum).setFocusable(false);
             firstRow.getChildAt(colNum).setClickable(false);
         }
     }
 
-    private void populateBoard(Game game, TableLayout table, LayoutInflater inflater) {
-        if (inflater == null) inflater = (LayoutInflater) table.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    private void populateBoard(Game game, final TableLayout table, LayoutInflater inflater) {
+        if (inflater == null)
+            inflater = (LayoutInflater) table.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         Typeface tileFont = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Swiss_911_Extra_Compressed.ttf");
 
@@ -239,9 +252,11 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
 
                 if (rowNum == 0) {
                     TextView categoryTile = (TextView) inflater.inflate(R.layout.category_tile, row, false);
-                    bindCategoryTile(game.categories.get(colNum), categoryTile);
+                    Category category = game.categories.get(colNum);
+                    bindCategoryTile(category, categoryTile);
                     categoryTile.setLayoutParams(params);
                     categoryTile.setTypeface(tileFont);
+                    categoryTile.setContentDescription("Category: " + category.title);
                     row.addView(categoryTile);
                     startFadeInAnimation(categoryTile, (long) (3400 * Math.random()));
 
@@ -250,7 +265,7 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
                     ((TextView) questionTile.findViewById(R.id.dollarSign)).setTypeface(tileFont);
                     if (game.categories.get(colNum).questions.size() > (rowNum - 1)) {
                         bindQuestionTile(game.categories.get(colNum).questions.get(rowNum - 1),
-                                questionTile);
+                                questionTile, game.categories.get(colNum));
                         startFadeInAnimation(questionTile, (long) (3400 * Math.random()));
                     } else {
                         questionTile.setFocusable(false);
@@ -263,15 +278,23 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
                 }
             }
         }
+
+        table.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                table.announceForAccessibility("Before answering any game questions, you may select a category to swap it for another");
+            }
+        }, 1000);
     }
 
-    private void bindQuestionTile(Question question, ViewGroup questionTile) {
+    private void bindQuestionTile(Question question, ViewGroup questionTile, Category category) {
         ((TextView) questionTile.findViewById(R.id.value)).setText(String.format("%d",
                 question.value));
         questionTile.setTag(question);
 
         questionTile.findViewById(R.id.dollarSign).setVisibility(View.VISIBLE);
         questionTile.findViewById(R.id.value).setVisibility(View.VISIBLE);
+        questionTile.setContentDescription(category.title + " for " + question.value + " dollars");
         questionTile.setFocusable(true);
         questionTile.setClickable(true);
 
@@ -290,7 +313,7 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
 
         int numRows = mTable.getChildCount();
 
-        for(int rowNum = 0; rowNum < numRows; rowNum++) {
+        for (int rowNum = 0; rowNum < numRows; rowNum++) {
             TableRow row = (TableRow) mTable.getChildAt(rowNum);
 
             if (rowNum == 0) {
@@ -302,7 +325,7 @@ public class GameFragment extends Fragment implements QuestionAnsweredListener {
                 // Question cell
                 ViewGroup questionTile = (ViewGroup) row.getChildAt(colIdx);
                 if (category.questions.size() > rowNum - 1)
-                    bindQuestionTile(category.questions.get(rowNum - 1), questionTile);
+                    bindQuestionTile(category.questions.get(rowNum - 1), questionTile, mGame.categories.get(colIdx));
                 else {
                     questionTile.setFocusable(false);
                     questionTile.setClickable(false);

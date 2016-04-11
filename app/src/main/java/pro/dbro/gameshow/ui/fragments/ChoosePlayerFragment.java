@@ -79,6 +79,7 @@ public class ChoosePlayerFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+        getActivity().setTitle("Select Players");
         try {
             mListener = (OnPlayersSelectedListener) activity;
         } catch (ClassCastException e) {
@@ -117,6 +118,7 @@ public class ChoosePlayerFragment extends Fragment {
             players.add(player);
         }
         PreferencesManager.savePlayers(getActivity(), players);
+        view.announceForAccessibility("Presenting Gameboard");
         mListener.onPlayersSelected(players);
     }
 
@@ -130,6 +132,7 @@ public class ChoosePlayerFragment extends Fragment {
         playerEntry.setTag("player-" + container.getChildCount()); // for espresso testing
         playerEntry.setFilters(new InputFilter[] {new LengthFilter(getResources().getInteger(R.integer.player_name_max_length))});
         playerEntry.setHint(getActivity().getString(R.string.new_player));
+        playerEntry.setContentDescription("Player " + String.valueOf(container.getChildCount()) + " name entry field");
         if (name != null) playerEntry.setText(name);
         playerEntry.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_user_white_small, 0, 0, 0);
         container.addView(playerEntry);

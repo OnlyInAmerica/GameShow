@@ -45,6 +45,9 @@ import pro.dbro.gameshow.model.Question;
 public class QuestionActivity extends Activity {
     public final String TAG = this.getClass().getSimpleName();
 
+    // Restul returned from speech recognition if speech not recognized
+    private static final String SPOKEN_RESULT_UNRECOGNIZED = "?";
+
     public static String INTENT_ACTION = "pro.dbro.gameshow.QuestionResult";
 
     /** Handler codes */
@@ -129,10 +132,19 @@ public class QuestionActivity extends Activity {
 
         prepareSpeechRecognizer();
         setupHandler();
+
+        // For TalkBack accessibility
+        promptView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                promptView.announceForAccessibility("Question: " + question.prompt);
+            }
+        }, 1000);
     }
 
     @Override
     public void onResume() {
+        super.onResume();
         if (question.isDailyDouble) {
             state = State.WILL_SPEAK_WAGER;
             dailyDouble.setVisibility(View.VISIBLE);
@@ -154,7 +166,6 @@ public class QuestionActivity extends Activity {
             presentQuestion();
             startQuestionTimer();
         }
-        super.onResume();
     }
 
     private void setupHandler() {
@@ -188,6 +199,9 @@ public class QuestionActivity extends Activity {
             singleActionBtn.setVisibility(View.VISIBLE);
             singleActionBtn.setText(getString(R.string.speak_answer));
         }
+        // For accessibility (TalkBack screen reader). DOES NOT WORK :(
+        //singleActionBtn.setContentDescription("Question: " + question.prompt);
+        //singleActionBtn.requestFocus();
     }
 
     private void presentWagerSelection() {
@@ -197,6 +211,7 @@ public class QuestionActivity extends Activity {
 
     private void presentSelectAnsweringPlayer() {
         promptView.setText("Who Answered?");
+        promptView.announceForAccessibility("Select answering player");
         singleActionBtn.setVisibility(View.INVISIBLE);
         choiceContainer.setVisibility(View.VISIBLE);
         for(int x = 0; x < choiceViews.size(); x++) {
@@ -239,13 +254,13 @@ public class QuestionActivity extends Activity {
                 }
                 Log.d(TAG, "Got results: " + builder.toString());
 
-                handleSpeechRecognized(recognitionResults.size() == 0 ? "?" : recognitionResults.get(0));
+                handleSpeechRecognized(recognitionResults.size() == 0 ? SPOKEN_RESULT_UNRECOGNIZED : recognitionResults.get(0));
             }
 
             @Override
             public void onError(int error) {
                 Log.w(TAG, "Speech recognition error: " + error);
-                handleSpeechRecognized("?");
+                handleSpeechRecognized(SPOKEN_RESULT_UNRECOGNIZED);
             }
 
             @Override
@@ -308,6 +323,7 @@ public class QuestionActivity extends Activity {
             choiceContainer.setVisibility(View.INVISIBLE);
             singleActionBtn.setVisibility(View.VISIBLE);
             singleActionBtn.setText(getString(R.string.continue_on));
+            singleActionBtn.announceForAccessibility("Time up. Answer was " + question.getAnswer());
             timerExpireTime = System.currentTimeMillis();
         }
     }
@@ -324,7 +340,7 @@ public class QuestionActivity extends Activity {
                 switch (state) {
                     case SPEAKING_ANSWER:
                     case SPEAKING_WAGER:
-                        handleSpeechRecognized("?");
+                        handleSpeechRecognized(SPOKEN_RESULT_UNRECOGNIZED);
                 }
             }
         }.start();
@@ -437,6 +453,12 @@ public class QuestionActivity extends Activity {
                 } else if (spokenAnswerObject.startsWith(prefixWithLeadingCapital)) {
                     spokenAnswerObject = spokenAnswerObject.replaceFirst(prefixWithLeadingCapital, "");
                 }
+            }
+
+            if (spokenAnswerObject.equals(SPOKEN_RESULT_UNRECOGNIZED)) {
+                promptView.announceForAccessibility(String.format("Heard no answer. Correct answer is %s", correctAnswer));
+            } else {
+                promptView.announceForAccessibility(String.format("Heard %s. Correct answer is %s", spokenAnswerObject, correctAnswer));
             }
 
             promptView.setText(String.format("Heard: %s \nAnswer: %s", spokenAnswerObject, correctAnswer));
